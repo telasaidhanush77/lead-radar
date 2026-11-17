@@ -46,19 +46,20 @@ def _wait_s(response: httpx.Response, attempt: int) -> float:
 
 def post_json_with_retry(client: httpx.Client, url: str, *, json: dict, headers: dict,
                          params: dict | None = None, max_tries: int = 3,
-                         sleep: Callable[[float], None] = time.sleep) -> dict:
+                         sleep: Callable[[float], None] = time.sleep,
+                         method: str = "POST") -> dict:
     """POST and return the JSON body. Retries 429/5xx and network errors, honouring
     Retry-After (capped at 30 s); other 4xx fail at once (retrying a bad key won't help)."""
     for attempt in range(1, max_tries + 1):
         try:
-            response = client.post(url, json=json, headers=headers, params=params)
+            response = client.request(method, url, json=json, headers=headers, params=params)
         except httpx.TransportError as exc:
             if attempt == max_tries:
                 raise LLMError(f"network: {exc}") from exc
             sleep(2**attempt)
             continue
         if response.status_code < 400:
-            return response.json()
+            return response.json() if response.content else {}
         error = f"HTTP {response.status_code}: {response.text[:200]}"
         if response.status_code not in RETRYABLE or attempt == max_tries:
             raise LLMError(error)
