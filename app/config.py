@@ -20,7 +20,7 @@ class Settings:
     groq_model: str = "openai/gpt-oss-120b"
     hubspot_token: str = ""
     slack_webhook_url: str = ""
-    fuzzy_threshold: int = 90
+    fuzzy_threshold: int = 92  # tuned by bench.run on seed 1
     backoff_base_s: float = 2.0
     run_worker: bool = False
     demo_mode: bool = False
@@ -41,7 +41,7 @@ def get_settings() -> Settings:
         groq_model=env("GROQ_MODEL", "openai/gpt-oss-120b"),
         hubspot_token=env("HUBSPOT_TOKEN", ""),
         slack_webhook_url=env("SLACK_WEBHOOK_URL", ""),
-        fuzzy_threshold=int(env("FUZZY_THRESHOLD", "90")),
+        fuzzy_threshold=int(env("FUZZY_THRESHOLD", "92")),
         backoff_base_s=float(env("BACKOFF_BASE_S", "2")),
         run_worker=_bool("RUN_WORKER"),
         demo_mode=_bool("DEMO_MODE"),

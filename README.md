@@ -1,0 +1,125 @@
+# Lead Radar
+
+**A small production-style GTM data pipeline:** inbound B2B leads arrive messy (a signed
+webhook or a CSV), get cleaned and deduplicated into companies, enriched, **scored on how
+badly they need compliance automation** (ISO 27001, SOC 2, TISAX, GDPR), routed to the right
+rep, and synced to a CRM, idempotently. It's one Python service on Postgres, with a
+reproducible benchmark behind every number below.
+
+Built as a portfolio project for a *Backend Engineer, GTM Engineering* role. All data is
+synthetic.
+
+```
+ webhook (HMAC) ─┐                     Postgres = data store + job queue (FOR UPDATE SKIP LOCKED)
+ CSV import ─────┴─► raw_leads ─► process_lead ─► enrich ─► score ─► route ─► crm_sync
+                     (verbatim,     normalize      Gemini /   rules,   region,   HubSpot or
+                      idempotent)   dedupe/merge   Groq /     explain- sticky    fake table,
+                                                   rules      able     owner,    hash-skip
+                                                                       1 alert
+```
+
+## Results
+
+<!-- results:start -->
+Measured 2026-11-17 at commit `29ef3ce`. Fuzzy threshold **92** (tuned on seed 1); numbers below are held-out seed 2.
+
+| Pipeline | |
+|---|---|
+| Leads in → true companies → found | 788 → 300 → 318 |
+| Dedupe precision / recall / F1 | 0.998 / 0.940 / 0.968 |
+| Throughput (ingest → CRM, 4 workers, laptop + Docker) | 14 leads/s |
+| Dead jobs | 0 |
+| Re-run: new alerts / new CRM records / new companies | 0 / 0 / 0 |
+
+| Classifier (60 hand-labelled) | Industry acc. | Signal F1 | p50 latency | Fallbacks | Cost / 1k leads* |
+|---|---|---|---|---|---|
+| rules | 42% | 0.37 | 0 ms | 0 | $0.000 |
+
+*At the provider's paid list price (see `bench/pricing.py`); this project runs on free tiers, so actual spend is $0.
+<!-- results:end -->
+
+How the numbers are kept honest:
+- **Dedupe:** the fuzzy-match threshold is tuned on seed 1 and reported on **held-out seed 2**.
+  Precision/recall are pairwise against the generator's ground truth (`_entity`).
+- **Classifiers:** scored on **60 hand-written descriptions** (`bench/labelled.jsonl`): English,
+  German, French and Dutch, ~10 deliberately tricky. They are never produced by the generator.
+  The keyword rules score 71% on generated text but 42% here, which is exactly the leakage this
+  avoids.
+- **Idempotency:** the benchmark re-runs every lead through the whole pipeline and **fails** if
+  that creates a single new alert, CRM record or company.
+- **Throughput** is measured on a laptop with Postgres in Docker Desktop. Profiling shows ~97%
+  of the time is spent waiting on database round trips (~10 per job at ~2.5 ms each on Docker for
+  Windows). Python is not the bottleneck, and more workers scale it (`SKIP LOCKED`).
+- **Cost** uses each provider's paid list price (`bench/pricing.py`, with source and date). The
+  project itself runs on free tiers, so actual spend is $0.
+
+## Quickstart
+
+```bash
+docker compose up --build          # Postgres + app on http://localhost:8000
+```
+Open the dashboard, enter the admin token (`change-me` by default), click **Run demo**.
+
+Without Docker for the app (Windows has no `make`, so the commands are given in full):
+
+```bash
+docker compose up -d db
+python -m venv .venv && .venv/Scripts/pip install -e ".[dev]"     # bin/ on macOS/Linux
+pytest -q                          # 190+ tests against a real Postgres
+ruff check .
+python -m bench.run                # rules only, offline
+python -m bench.run --providers rules gemini groq   # with GEMINI_API_KEY / GROQ_API_KEY in .env
+```
+
+Send a signed webhook:
+```python
+import json, time, httpx
+from app.ingest import sign
+body = json.dumps({"email": "jan@mueller-auto.de", "company": "Müller Automotive GmbH",
+                   "country": "DE", "description": "Tier-1 supplier to BMW"}).encode()
+ts = str(int(time.time()))
+httpx.post("http://localhost:8000/webhooks/leads", content=body, headers={
+    "X-Timestamp": ts, "X-Signature": sign("change-me", ts, body),
+    "Idempotency-Key": "demo-1", "Content-Type": "application/json"})
+```
+
+## How scoring works
+
+Transparent points, so a rep can read *why* a lead is hot:
+
+| Rule | Points | Why it signals compliance need |
+|---|---|---|
+| HQ in Europe (EU27 + UK, CH, NO, IS, LI) | 15 | GDPR; buyers ask for ISO 27001 |
+| 20–500 employees | 15 | Gets security questionnaires, has no GRC team |
+| Automotive supplier | 30 | OEMs require **TISAX**, a hard deadline |
+| US enterprise customers | 20 | US procurement asks for **SOC 2** |
+| Hiring security/compliance roles | 20 | Investing in security right now |
+| Regulated industry | 15 | Compliance is mandatory |
+| Senior contact (C-level/VP/Director) | 10 | Can buy or champion |
+
+Tier **A ≥ 70** → AE alert (once per company, ever) · **B ≥ 40** → BDR queue · **C** → nurture.
+
+## Design choices
+
+- **Postgres as the queue.** Each job's writes and its `done` mark commit in one transaction;
+  failures back off exponentially and land in a visible dead-letter list with a Retry button.
+- **Idempotent everywhere:** webhook idempotency keys (`ON CONFLICT DO NOTHING`), contact upserts
+  by email, a compare-and-set `alerted_at` for the one-time alert, content-hash skip for CRM
+  writes, and stored CRM ids so companies without a domain never duplicate.
+- **Entity resolution:** exact domain → fuzzy name (`rapidfuzz`) within the same country →
+  new company. Per-field provenance: the newest non-null value wins, by the time the lead
+  was received rather than the order it was processed in.
+- **LLMs as an option, not a dependency.** One `Classifier` interface: keyword rules (default,
+  offline), Gemini, Groq. Replies are strictly validated against a closed label set. Any
+  429/5xx/bad JSON falls back to rules and is counted. Results are cached by content hash.
+- **No ORM, no frontend framework.** Hand-written SQL; one server-rendered, escaped HTML page.
+
+## Limitations
+
+- Fuzzy matching scans companies in the same country (O(n) per lead); `pg_trgm` is the next
+  step past ~50k companies. Dedupe runs under one advisory lock (simple and correct, but
+  serialised).
+- One-way CRM sync; HubSpot gets standard fields only (the score rides in `description`).
+- A Slack alert can repeat if the process dies between sending and committing; a transactional
+  outbox would fix that.
+- Synthetic data: realistic mess, but not real-world distributions.

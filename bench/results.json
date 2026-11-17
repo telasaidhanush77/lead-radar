@@ -1,0 +1,60 @@
+{
+  "date": "2026-11-17",
+  "commit": "29ef3ce",
+  "threshold": 92,
+  "tuning_f1": {
+    "80": 0.967642526964561,
+    "84": 0.9736434108527131,
+    "86": 0.9736434108527131,
+    "88": 0.9746508018623901,
+    "90": 0.9746508018623901,
+    "92": 0.9746508018623901,
+    "95": 0.96931877275091
+  },
+  "dedupe": {
+    "precision": 0.9978969505783386,
+    "recall": 0.9396039603960396,
+    "f1": 0.9678735339112697,
+    "seconds": 58.22051170002669,
+    "dead_jobs": 0,
+    "leads": 788,
+    "companies_true": 300,
+    "companies_found": 318
+  },
+  "idempotency": {
+    "alerts": 0,
+    "crm": 0,
+    "companies": 0
+  },
+  "classifiers": {
+    "rules": {
+      "industry_accuracy": 0.4166666666666667,
+      "signal_f1": 0.37209302325581395,
+      "p50_latency_ms": 0.0807500327937305,
+      "fallbacks": 0,
+      "cost_per_1k_usd": 0.0
+    }
+  },
+  "summary": [
+    [
+      "Dedupe F1 (held-out seed 2)",
+      "0.968"
+    ],
+    [
+      "Dedupe precision / recall",
+      "0.998 / 0.940"
+    ],
+    [
+      "Pipeline throughput",
+      "14 leads/s"
+    ],
+    [
+      "Re-run: new alerts / CRM records",
+      "0 / 0"
+    ],
+    [
+      "rules industry accuracy (hand-labelled)",
+      "42%"
+    ]
+  ]
+}
