@@ -2,6 +2,7 @@ import hmac
 import json
 import time
 from collections.abc import Iterator
+from contextlib import asynccontextmanager
 from uuid import uuid4
 
 import psycopg
@@ -12,11 +13,23 @@ from app.config import get_settings
 from app.db import get_pool
 from app.ingest import parse_csv, row_key, store_lead, verify
 from app.log import request_id, setup_logging
+from app.worker import start_background
 
 MAX_BODY_BYTES = 5 * 1024 * 1024
 
 setup_logging()
-app = FastAPI(title="Lead Radar")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    settings = get_settings()
+    stop = start_background(settings) if settings.run_worker else None
+    yield
+    if stop:
+        stop.set()
+
+
+app = FastAPI(title="Lead Radar", lifespan=lifespan)
 
 
 @app.middleware("http")
