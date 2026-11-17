@@ -46,3 +46,12 @@ def db(_schema):
         conn.commit()
         yield conn
         conn.rollback()
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _close_pool():
+    yield
+    from app.db import get_pool
+
+    if get_pool.cache_info().currsize:
+        get_pool().close()  # pool threads must stop before interpreter shutdown (3.14 is strict)
