@@ -1,0 +1,25 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: lead
+      POSTGRES_PASSWORD: lead
+      POSTGRES_DB: lead
+    ports: ["5433:5432"]
+    volumes:
+      - ./scripts/create-test-db.sql:/docker-entrypoint-initdb.d/create-test-db.sql:ro
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "lead"]
+      interval: 2s
+      retries: 20
+
+  app:
+    build: .
+    environment:
+      DATABASE_URL: postgresql://lead:lead@db:5432/lead
+      RUN_WORKER: "1"
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-change-me}
+      WEBHOOK_SECRET: ${WEBHOOK_SECRET:-change-me}
+    ports: ["8000:8000"]
+    depends_on:
+      db: {condition: service_healthy}
