@@ -13,6 +13,7 @@ from app.config import Settings, get_settings
 from app.db import get_pool
 from app.dedupe import process_lead
 from app.log import job_id
+from app.route import route_company
 from app.score import score_company
 
 log = logging.getLogger("worker")
@@ -22,6 +23,7 @@ HANDLERS: dict[str, Handler] = {
     "process_lead": process_lead,
     "enrich": enrich,
     "score": score_company,
+    "route": route_company,
 }
 IDLE_SLEEP_S = 0.5
 
