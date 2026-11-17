@@ -6,6 +6,21 @@ from psycopg.rows import dict_row
 
 TEST_DB = os.environ.get("TEST_DATABASE_URL", "postgresql://lead:lead@localhost:5433/lead_test")
 os.environ["DATABASE_URL"] = TEST_DB  # app code under test must never touch a real DB
+os.environ["ADMIN_TOKEN"] = "test-admin"
+os.environ["WEBHOOK_SECRET"] = "test-secret"
+os.environ["BACKOFF_BASE_S"] = "0"
+for key in ("LLM_PROVIDER", "CRM_PROVIDER", "RUN_WORKER", "DEMO_MODE", "SLACK_WEBHOOK_URL"):
+    os.environ.pop(key, None)
+
+
+@pytest.fixture
+def client(db):
+    from fastapi.testclient import TestClient
+
+    from app.main import app
+
+    with TestClient(app) as c:
+        yield c
 
 
 @pytest.fixture(scope="session")
