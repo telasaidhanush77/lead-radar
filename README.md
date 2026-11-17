@@ -71,17 +71,15 @@ python -m bench.run                # rules only, offline
 python -m bench.run --providers rules gemini groq   # with GEMINI_API_KEY / GROQ_API_KEY in .env
 ```
 
-Send a signed webhook:
-```python
-import json, time, httpx
-from app.ingest import sign
-body = json.dumps({"email": "jan@mueller-auto.de", "company": "Müller Automotive GmbH",
-                   "country": "DE", "description": "Tier-1 supplier to BMW"}).encode()
-ts = str(int(time.time()))
-httpx.post("http://localhost:8000/webhooks/leads", content=body, headers={
-    "X-Timestamp": ts, "X-Signature": sign("change-me", ts, body),
-    "Idempotency-Key": "demo-1", "Content-Type": "application/json"})
+Send a signed webhook (HMAC-SHA256 over `timestamp.body`, rejected after 5 minutes):
+```bash
+python scripts/send_webhook.py http://localhost:8000 change-me    # -> 202 accepted
 ```
+
+**Deploy ($0):** `render.yaml` runs the Docker image on Render's free plan with Neon Postgres.
+The worker runs as a thread in the web process (the free plan has no worker services), and the
+public demo replays cached LLM answers, so visitors never spend API quota. The free plan sleeps
+when idle, so the first request can take ~50 s.
 
 ## How scoring works
 

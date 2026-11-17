@@ -1,0 +1,22 @@
+# Render Blueprint: free web service. Database = Neon free Postgres (set DATABASE_URL by hand).
+services:
+  - type: web
+    name: lead-radar
+    runtime: docker
+    plan: free
+    healthCheckPath: /healthz
+    envVars:
+      - key: DATABASE_URL        # Neon pooled URL, ends with ?sslmode=require
+        sync: false
+      - key: ADMIN_TOKEN
+        generateValue: true
+      - key: WEBHOOK_SECRET
+        generateValue: true
+      - key: RUN_WORKER          # free tier has no background workers: run it in-process
+        value: "1"
+      - key: DEMO_MODE           # LLM answers replayed from bench/classify_cache.jsonl
+        value: "1"
+      - key: LLM_PROVIDER
+        value: gemini
+      - key: CRM_PROVIDER
+        value: fake

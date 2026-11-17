@@ -4,28 +4,52 @@ import random
 import time
 from collections.abc import Iterator
 from contextlib import asynccontextmanager
+from pathlib import Path
 from uuid import uuid4
 
 import psycopg
 from fastapi import Depends, FastAPI, Header, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse
+from psycopg.types.json import Jsonb
 
 from app import queue
 from app.config import get_settings
 from app.dashboard import render_dashboard
-from app.db import get_pool
+from app.db import get_pool, migrate
 from app.ingest import parse_csv, row_key, store_lead, verify
 from app.log import request_id, setup_logging
 from app.worker import start_background
 
 MAX_BODY_BYTES = 5 * 1024 * 1024
+DEMO_CACHE = Path(__file__).resolve().parent.parent / "bench" / "classify_cache.jsonl"
 
 setup_logging()
+
+
+def load_demo_cache(conn: psycopg.Connection, path: Path = DEMO_CACHE) -> int:
+    """Seed classify_cache with LLM answers computed offline, so the public demo shows real
+    Gemini/Groq results without calling them. Returns rows added."""
+    if not path.exists():
+        return 0
+    added = 0
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        row = json.loads(line)
+        added += conn.execute(
+            "INSERT INTO classify_cache (provider, content_hash, result, latency_ms) "
+            "VALUES (%s, %s, %s, %s) ON CONFLICT DO NOTHING",
+            (row["provider"], row["content_hash"], Jsonb(row["result"]), row.get("latency_ms")),
+        ).rowcount
+    return added
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     settings = get_settings()
+    with get_pool().connection() as conn:  # deploys have no separate migrate step
+        migrate(conn)
+        load_demo_cache(conn)
     stop = start_background(settings) if settings.run_worker else None
     yield
     if stop:
@@ -68,7 +92,8 @@ def require_admin(authorization: str | None = Header(None)) -> None:
 
 
 @app.get("/healthz")
-def healthz() -> dict:
+def healthz(conn: psycopg.Connection = Depends(get_conn)) -> dict:
+    conn.execute("SELECT 1")  # a dead database should fail the platform's health check
     return {"status": "ok"}
 
 
