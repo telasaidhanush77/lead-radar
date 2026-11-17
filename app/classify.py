@@ -107,6 +107,8 @@ class CachedClassifier:
             return validate(row["result"])
         start = time.perf_counter()
         result = self.inner.classify(text)
+        if getattr(self.inner, "last_was_fallback", False):
+            return result  # a rules answer must not be cached as the LLM's
         self.conn.execute(
             "INSERT INTO classify_cache (provider, content_hash, result, latency_ms) "
             "VALUES (%s, %s, %s, %s) ON CONFLICT DO NOTHING",
