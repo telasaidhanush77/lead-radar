@@ -1,0 +1,60 @@
+{"text": "Stamping and welding of body-in-white parts; our biggest customer is the Volkswagen plant in Zwickau.", "industry": "automotive", "signals": ["automotive_supplier"]}
+{"text": "We write embedded software for engine control units used by three European carmakers.", "industry": "automotive", "signals": ["automotive_supplier"]}
+{"text": "Hersteller von Kabelbäumen für Nutzfahrzeuge, Lieferant von Daimler Truck seit 1998.", "industry": "automotive", "signals": ["automotive_supplier"]}
+{"text": "Aftermarket tuning parts sold directly to car enthusiasts through dealers.", "industry": "automotive", "signals": []}
+{"text": "Fabricant français de systèmes de freinage, fournisseur de rang 1 pour Renault et Stellantis.", "industry": "automotive", "signals": ["automotive_supplier"]}
+{"text": "EV charging hardware for car dealerships; we are now opening a sales office in Chicago to serve American enterprise fleets.", "industry": "automotive", "signals": ["us_enterprise_customers"]}
+{"text": "Leverancier van interieuronderdelen voor BMW en Volvo, gevestigd in Born.", "industry": "automotive", "signals": ["automotive_supplier"]}
+{"text": "Crash-test simulation software licensed by OEM engineering departments; recruiting an information security officer this spring.", "industry": "automotive", "signals": ["automotive_supplier", "hiring_security"]}
+{"text": "Instant SEPA transfers and virtual IBANs for marketplaces, operating under an EMI licence from the Bank of Lithuania.", "industry": "fintech", "signals": ["regulated_industry"]}
+{"text": "Buy-now-pay-later checkout for European web shops.", "industry": "fintech", "signals": []}
+{"text": "Robo-advisor for retail investors, supervised by the AMF in France.", "industry": "fintech", "signals": ["regulated_industry"]}
+{"text": "We reconcile bank statements for accounting teams and are hiring our first security engineer.", "industry": "fintech", "signals": ["hiring_security"]}
+{"text": "Kreditplattform für Mittelständler mit Vollbanklizenz.", "industry": "fintech", "signals": ["regulated_industry"]}
+{"text": "Cross-border payroll payouts; most of our volume now comes from US tech companies paying European contractors.", "industry": "fintech", "signals": ["us_enterprise_customers"]}
+{"text": "Fraud detection models that card issuers plug into their authorisation flow.", "industry": "fintech", "signals": []}
+{"text": "Plateforme de paiement pour les associations, agréée par l'ACPR.", "industry": "fintech", "signals": ["regulated_industry"]}
+{"text": "Electronic health records for physiotherapy practices, hosted in German data centres.", "industry": "healthtech", "signals": ["regulated_industry"]}
+{"text": "Video consultations with dermatologists, reimbursed by public health insurers.", "industry": "healthtech", "signals": ["regulated_industry"]}
+{"text": "Wearable ECG patch certified as a class IIa medical device.", "industry": "healthtech", "signals": ["regulated_industry"]}
+{"text": "Mental-wellbeing app for employees, sold to HR departments.", "industry": "healthtech", "signals": []}
+{"text": "Software voor huisartsenpraktijken om afspraken en recepten te beheren.", "industry": "healthtech", "signals": ["regulated_industry"]}
+{"text": "Clinical trial data management for pharma sponsors, including several large US drug makers.", "industry": "healthtech", "signals": ["regulated_industry", "us_enterprise_customers"]}
+{"text": "Nurse staffing marketplace for care homes; we have an open position for a Head of Compliance.", "industry": "healthtech", "signals": ["hiring_security"]}
+{"text": "Contract management tool for legal teams, sold per seat.", "industry": "saas", "signals": []}
+{"text": "Low-code workflow automation; Fortune 500 manufacturers are now 30% of our ARR.", "industry": "saas", "signals": ["us_enterprise_customers"]}
+{"text": "Wir entwickeln eine Cloud-Lösung für die Zeiterfassung im Handwerk.", "industry": "saas", "signals": []}
+{"text": "Observability platform for Kubernetes clusters; we are recruiting a security architect to own our compliance roadmap.", "industry": "saas", "signals": ["hiring_security"]}
+{"text": "Board-meeting software for listed companies on both sides of the Atlantic, with most new logos coming from New York.", "industry": "saas", "signals": ["us_enterprise_customers"]}
+{"text": "Learning management system for corporate training departments.", "industry": "saas", "signals": []}
+{"text": "Outil de planification des tournées pour les techniciens, vendu en abonnement.", "industry": "saas", "signals": []}
+{"text": "A CRM built for real-estate agents.", "industry": "saas", "signals": []}
+{"text": "Steel forgings for wind turbines and mining equipment.", "industry": "manufacturing", "signals": []}
+{"text": "Familienunternehmen für Hydraulikzylinder, Werk in Thüringen, wir suchen einen IT-Sicherheitsbeauftragten.", "industry": "manufacturing", "signals": ["hiring_security"]}
+{"text": "We build CNC milling centres and export most of them to US aerospace primes.", "industry": "manufacturing", "signals": ["us_enterprise_customers"]}
+{"text": "Industrial 3D printers for metal parts.", "industry": "manufacturing", "signals": []}
+{"text": "Producent van verpakkingsfolie voor de voedingsindustrie.", "industry": "manufacturing", "signals": []}
+{"text": "Turbine blades and pressure vessels for power plants operated as critical infrastructure.", "industry": "manufacturing", "signals": ["regulated_industry"]}
+{"text": "Online store for Scandinavian design lamps, shipping to 20 countries.", "industry": "ecommerce", "signals": []}
+{"text": "Grocery delivery app with our own dark stores in Amsterdam and Rotterdam.", "industry": "ecommerce", "signals": []}
+{"text": "We sell refurbished smartphones on our own site and on Amazon; currently hiring a data protection officer.", "industry": "ecommerce", "signals": ["hiring_security"]}
+{"text": "Boutique en ligne de vins naturels.", "industry": "ecommerce", "signals": []}
+{"text": "Sneaker drops and resale for collectors.", "industry": "ecommerce", "signals": []}
+{"text": "Pallet storage and pick-and-pack for online brands near Venlo.", "industry": "logistics", "signals": []}
+{"text": "Air cargo handling at Frankfurt airport.", "industry": "logistics", "signals": []}
+{"text": "Container trucking from the port of Gdansk; our customers include American retailers shipping into Europe.", "industry": "logistics", "signals": ["us_enterprise_customers"]}
+{"text": "Transportunternehmen für Gefahrgut mit eigener Flotte.", "industry": "logistics", "signals": []}
+{"text": "Parcel lockers in train stations, run as a franchise network.", "industry": "logistics", "signals": []}
+{"text": "Digital freight marketplace matching shippers and carriers; we are looking for a Head of Security.", "industry": "logistics", "signals": ["hiring_security"]}
+{"text": "PR agency for deep-tech startups.", "industry": "other", "signals": []}
+{"text": "We organise developer conferences in Berlin and Lisbon.", "industry": "other", "signals": []}
+{"text": "Bureau d'études en génie civil pour ponts et tunnels.", "industry": "other", "signals": []}
+{"text": "Executive search for CFO and board roles.", "industry": "other", "signals": []}
+{"text": "Tax advisory firm for startups and their founders.", "industry": "other", "signals": []}
+{"text": "We are not a bank: we build budgeting spreadsheets templates for households.", "industry": "other", "signals": []}
+{"text": "Security cameras and alarm installation for shops; not hiring at the moment.", "industry": "other", "signals": []}
+{"text": "Tier-1 support outsourcing for software vendors, with agents in Lisbon and Krakow.", "industry": "other", "signals": []}
+{"text": "We help car dealers run their marketing on social media.", "industry": "other", "signals": []}
+{"text": "Our platform matches hospitals with freelance doctors.", "industry": "healthtech", "signals": []}
+{"text": "Insurance comparison website for pet owners.", "industry": "fintech", "signals": []}
+{"text": "Warehouse robots that pick items for e-commerce fulfilment centres.", "industry": "manufacturing", "signals": []}

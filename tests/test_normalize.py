@@ -100,3 +100,12 @@ def test_normalize_lead_empty_payload():
 
 def test_invalid_email_is_none():
     assert normalize_lead({"email": "not-an-email"}).email is None
+
+
+@pytest.mark.parametrize("raw,expected", [
+    ("Nielsen Logistics A/S", "nielsen logistics"), ("Nowak Pay Sp. z o.o.", "nowak pay"),
+    ("Navarro Retail S.L.", "navarro retail"), ("Iyer Health Pvt Ltd", "iyer health"),
+    ("Rossi Cloud S.p.A.", "rossi cloud"), ("Weber GmbH & Co. KG", "weber"),
+])
+def test_name_key_strips_european_legal_forms(raw, expected):
+    assert name_key(raw) == expected

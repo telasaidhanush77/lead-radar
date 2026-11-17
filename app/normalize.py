@@ -13,7 +13,8 @@ FREE_MAIL = frozenset({
 
 LEGAL_SUFFIXES = frozenset({
     "gmbh", "ag", "ug", "kg", "ltd", "limited", "plc", "bv", "nv", "sa", "sas", "sarl", "srl",
-    "spa", "ab", "as", "oy", "aps", "inc", "llc", "co", "se", "eg",
+    "spa", "ab", "as", "oy", "aps", "inc", "llc", "co", "se", "eg", "sl", "pvt",
+    "sp", "z", "oo",  # Polish "Sp. z o.o."
 })
 
 _COUNTRIES = {
@@ -121,11 +122,12 @@ def domain_from(email: str | None, website: str | None) -> tuple[str | None, boo
 
 
 def name_key(name: str | None) -> str | None:
-    """'Müller-Automotive GmbH' -> 'mueller automotive'. The key fuzzy matching compares."""
+    """'Müller-Automotive GmbH' -> 'mueller automotive'. The key fuzzy matching compares.
+    Dots and slashes go first so 'S.A.' -> 'sa' and 'A/S' -> 'as' are recognised suffixes."""
     name = _clean(name)
     if name is None:
         return None
-    text = re.sub(r"[^a-z0-9]+", " ", fold(name).replace(".", ""))
+    text = re.sub(r"[^a-z0-9]+", " ", fold(name).replace(".", "").replace("/", ""))
     tokens = [t for t in text.split() if t not in LEGAL_SUFFIXES]
     return " ".join(tokens) or None
 
