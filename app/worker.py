@@ -8,6 +8,7 @@ import psycopg
 from psycopg_pool import ConnectionPool
 
 from app import queue
+from app.classify import enrich
 from app.config import Settings, get_settings
 from app.db import get_pool
 from app.dedupe import process_lead
@@ -18,6 +19,7 @@ log = logging.getLogger("worker")
 Handler = Callable[[psycopg.Connection, dict, Settings], None]
 HANDLERS: dict[str, Handler] = {
     "process_lead": process_lead,
+    "enrich": enrich,
 }
 IDLE_SLEEP_S = 0.5
 
