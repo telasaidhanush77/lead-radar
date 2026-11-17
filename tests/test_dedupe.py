@@ -136,3 +136,12 @@ def test_nicely_cased_name_replaces_shouty_one(db):
            {"email": "b@granite.nl", "company": "Granite Autoteile"})
     assert db.execute("SELECT canonical_name FROM companies").fetchone() == {
         "canonical_name": "Granite Autoteile"}
+
+
+def test_reprocessing_lead_without_domain_or_country_reuses_its_company(db):
+    ingest(db, {"email": "x@gmail.com", "company": "Name Only Studio"})
+    db.execute("INSERT INTO jobs (kind, payload) SELECT 'process_lead', "
+               "jsonb_build_object('raw_lead_id', id) FROM raw_leads")
+    db.commit()
+    drain(get_pool(), get_settings())
+    assert count(db, "companies") == 1

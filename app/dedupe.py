@@ -40,8 +40,10 @@ def merge_fields(current: dict, provenance: dict, incoming: dict, lead_id: int,
 
 
 # ---- database -----------------------------------------------------------------------------
-def resolve_company(conn: psycopg.Connection, lead: NormalizedLead, threshold: int) -> int | None:
-    """Domain match, else fuzzy name match in the same country, else a new company.
+def resolve_company(conn: psycopg.Connection, lead: NormalizedLead, threshold: int,
+                    previous: int | None = None) -> int | None:
+    """Domain match, else fuzzy name match in the same country, else the company this raw
+    lead resolved to last time (`previous`, keeps reprocessing idempotent), else a new one.
     None when the lead has neither a company domain nor a company name (unassigned)."""
     # ponytail: global lock serializes resolution so two workers can't both create the same
     # company; per-name locks if dedupe throughput ever matters.
@@ -60,6 +62,8 @@ def resolve_company(conn: psycopg.Connection, lead: NormalizedLead, threshold: i
         ).fetchall()
         company_id = best_match(lead.name_key, [(r["id"], r["name_key"]) for r in rows],
                                 threshold)
+    if company_id is None:
+        company_id = previous
     if company_id is None:
         if not (lead.domain or lead.name_key):
             return None
@@ -131,7 +135,11 @@ def process_lead(conn: psycopg.Connection, payload: dict, settings: Settings) ->
     raw = conn.execute("SELECT id, payload, received_at, contact_id FROM raw_leads WHERE id = %s",
                        (payload["raw_lead_id"],)).fetchone()
     lead = normalize_lead(raw["payload"])
-    company_id = resolve_company(conn, lead, settings.fuzzy_threshold)
+    previous = None
+    if raw["contact_id"]:
+        previous = conn.execute("SELECT company_id FROM contacts WHERE id = %s",
+                                (raw["contact_id"],)).fetchone()["company_id"]
+    company_id = resolve_company(conn, lead, settings.fuzzy_threshold, previous)
     if company_id is not None:
         _merge_into_company(conn, company_id, lead, raw["id"], raw["received_at"].isoformat())
     contact_id = _save_contact(conn, raw["contact_id"], lead, company_id)
