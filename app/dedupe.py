@@ -73,12 +73,20 @@ def resolve_company(conn: psycopg.Connection, lead: NormalizedLead, threshold: i
     return company_id
 
 
+def _shouty(name: str | None) -> bool:
+    """ALL CAPS or all lowercase: how people type into forms, not how a company spells itself."""
+    return bool(name) and (name.isupper() or name.islower())
+
+
 def _merge_into_company(conn: psycopg.Connection, company_id: int, lead: NormalizedLead,
                         lead_id: int, at: str) -> None:
     row = conn.execute(
         "SELECT canonical_name, country, employees, description, name_key, provenance "
         "FROM companies WHERE id = %s FOR UPDATE", (company_id,)).fetchone()
-    incoming = {"canonical_name": lead.company_name, "country": lead.country,
+    display_name = lead.company_name
+    if _shouty(display_name) and row["canonical_name"] and not _shouty(row["canonical_name"]):
+        display_name = None  # keep the nicely cased name we already have
+    incoming = {"canonical_name": display_name, "country": lead.country,
                 "employees": lead.employees, "description": lead.description}
     fields, prov = merge_fields({k: row[k] for k in MERGED_FIELDS}, row["provenance"],
                                 incoming, lead_id, at)

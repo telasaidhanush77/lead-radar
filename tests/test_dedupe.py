@@ -121,3 +121,18 @@ def test_reprocessing_is_idempotent(db):
     db.commit()
     drain(get_pool(), get_settings())
     assert count(db, "companies") == 2 and count(db, "contacts") == 2
+
+
+def test_shouty_name_does_not_replace_nicely_cased_one(db):
+    ingest(db, {"email": "a@granite.nl", "company": "Granite Autoteile B.V."},
+           {"email": "b@granite.nl", "company": "GRANITE AUTOTEILE B.V."},
+           {"email": "c@granite.nl", "company": "granite autoteile"})
+    assert db.execute("SELECT canonical_name FROM companies").fetchone() == {
+        "canonical_name": "Granite Autoteile B.V."}
+
+
+def test_nicely_cased_name_replaces_shouty_one(db):
+    ingest(db, {"email": "a@granite.nl", "company": "GRANITE AUTOTEILE"},
+           {"email": "b@granite.nl", "company": "Granite Autoteile"})
+    assert db.execute("SELECT canonical_name FROM companies").fetchone() == {
+        "canonical_name": "Granite Autoteile"}

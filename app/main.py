@@ -1,5 +1,6 @@
 import hmac
 import json
+import random
 import time
 from collections.abc import Iterator
 from contextlib import asynccontextmanager
@@ -7,9 +8,11 @@ from uuid import uuid4
 
 import psycopg
 from fastapi import Depends, FastAPI, Header, HTTPException, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 
+from app import queue
 from app.config import get_settings
+from app.dashboard import render_dashboard
 from app.db import get_pool
 from app.ingest import parse_csv, row_key, store_lead, verify
 from app.log import request_id, setup_logging
@@ -101,3 +104,31 @@ def import_csv(body: bytes = Depends(raw_body), conn: psycopg.Connection = Depen
         raise HTTPException(422, "CSV must be UTF-8") from None
     accepted = sum(store_lead(conn, "csv", row_key(r), r) is not None for r in rows)
     return {"accepted": accepted, "duplicates": len(rows) - accepted}
+
+
+@app.get("/", response_class=HTMLResponse)
+def dashboard(conn: psycopg.Connection = Depends(get_conn)) -> str:
+    return render_dashboard(conn)
+
+
+@app.post("/jobs/{job_id}/retry", dependencies=[Depends(require_admin)])
+def retry_job(job_id: int, conn: psycopg.Connection = Depends(get_conn)) -> dict:
+    if not queue.retry(conn, job_id):
+        raise HTTPException(404, "no dead job with that id")
+    return {"retried": True}
+
+
+DEMO_COMPANIES = 80
+
+
+@app.post("/demo/run", dependencies=[Depends(require_admin)])
+def demo_run(conn: psycopg.Connection = Depends(get_conn)) -> dict:
+    """Feed a fresh batch of synthetic leads through the real ingest path."""
+    from bench.generate import generate
+
+    seed = random.randrange(10**9)  # new seed each click, so keys never collide with old runs
+    accepted = 0
+    for lead in generate(seed, DEMO_COMPANIES):
+        payload = {k: v for k, v in lead.items() if not k.startswith("_")}  # drop ground truth
+        accepted += store_lead(conn, "demo", lead["_key"], payload) is not None
+    return {"accepted": accepted}
