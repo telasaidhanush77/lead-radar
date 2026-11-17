@@ -84,6 +84,10 @@ class _LLMClassifier:
     def _ask(self, text: str) -> str:
         raise NotImplementedError
 
+    def complete(self, prompt: str) -> str:
+        """Free text (used by the brief agent). Raises LLMError on failure."""
+        raise NotImplementedError
+
     def classify(self, text: str) -> Classification:
         self.last_was_fallback = False
         if not text.strip():
@@ -103,12 +107,17 @@ class GeminiClassifier(_LLMClassifier):
     URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 
     def _ask(self, text: str) -> str:
+        return self._generate(PROMPT + text, {"responseMimeType": "application/json",
+                                              "temperature": 0})
+
+    def complete(self, prompt: str) -> str:
+        return self._generate(prompt, {"temperature": 0.4})
+
+    def _generate(self, prompt: str, config: dict) -> str:
         data = post_json_with_retry(
             self.client, self.URL.format(model=self.model),
             headers={"x-goog-api-key": self.api_key},
-            json={"contents": [{"parts": [{"text": PROMPT + text}]}],
-                  "generationConfig": {"responseMimeType": "application/json",
-                                       "temperature": 0}},
+            json={"contents": [{"parts": [{"text": prompt}]}], "generationConfig": config},
             sleep=self.sleep)
         meta = data.get("usageMetadata", {})
         self.usage["in"] += meta.get("promptTokenCount", 0)
@@ -121,11 +130,17 @@ class GroqClassifier(_LLMClassifier):
     URL = "https://api.groq.com/openai/v1/chat/completions"
 
     def _ask(self, text: str) -> str:
+        return self._chat(PROMPT + text, {"temperature": 0,
+                                          "response_format": {"type": "json_object"}})
+
+    def complete(self, prompt: str) -> str:
+        return self._chat(prompt, {"temperature": 0.4})
+
+    def _chat(self, prompt: str, options: dict) -> str:
         data = post_json_with_retry(
             self.client, self.URL, headers={"Authorization": f"Bearer {self.api_key}"},
-            json={"model": self.model, "temperature": 0,
-                  "response_format": {"type": "json_object"},
-                  "messages": [{"role": "user", "content": PROMPT + text}]},
+            json={"model": self.model, **options,
+                  "messages": [{"role": "user", "content": prompt}]},
             sleep=self.sleep)
         usage = data.get("usage", {})
         self.usage["in"] += usage.get("prompt_tokens", 0)

@@ -125,3 +125,11 @@ def test_prompt_lists_every_label():
     from app.llm import PROMPT
 
     assert all(label in PROMPT for label in (*INDUSTRIES, *SIGNALS))
+
+
+def test_complete_returns_free_text():
+    seen = []
+    c = GroqClassifier("key", "m", client_returning(
+        httpx.Response(200, json=groq_reply("BRIEF:\nx\nEMAIL:\ny")), seen=seen))
+    assert c.complete("write a brief") == "BRIEF:\nx\nEMAIL:\ny"
+    assert "response_format" not in json.loads(seen[0].content)
