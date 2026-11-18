@@ -36,7 +36,7 @@ from bench.pricing import PRICES, cost_per_1k
 
 HERE = Path(__file__).resolve().parent
 THRESHOLDS = [80, 84, 86, 88, 90, 92, 95]
-PACE_S = {"gemini": 4.0, "groq": 2.5}  # free-tier friendly: Groq free = 30 req/min, 8K tok/min
+PACE_S = {"gemini": 4.0, "groq": 3.0}  # free-tier friendly: Groq free = 30 req/min, 8K tok/min
 N_COMPANIES = 300
 WORKERS = 4
 
