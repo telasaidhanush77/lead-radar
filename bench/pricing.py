@@ -3,11 +3,11 @@ We run on free tiers. Prices change: re-check the source before quoting a number
 
 PRICES = {
     "gemini": {
-        "model": "gemini-3.8-flash",
-        "in_per_m": 0.75,    # USD per 1M input tokens (rises to 1.50 on 2027-01-01)
-        "out_per_m": 3.75,   # USD per 1M output tokens, thinking tokens included
+        "model": "gemini-3.5-flash-lite",
+        "in_per_m": 0.30,    # USD per 1M input tokens (text)
+        "out_per_m": 2.50,   # USD per 1M output tokens, thinking tokens included
         "source": "https://aistudio.google.com/docs/pricing",
-        "checked": "2026-11-17",
+        "checked": "2026-11-18",
     },
     "groq": {
         "model": "openai/gpt-oss-120b",

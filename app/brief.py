@@ -4,8 +4,10 @@ Nothing is ever sent. With no LLM (or a bad reply) a deterministic template is u
 import logging
 from collections.abc import Callable
 
+import httpx
 import psycopg
 
+from app.agent import research, safe_fetch
 from app.score import SENIORITY_RANK
 
 log = logging.getLogger("brief")
@@ -94,8 +96,28 @@ def make_brief(company: dict, score: dict, contacts: list[dict],
     return parsed or fallback
 
 
-def create_brief(conn: psycopg.Connection, company_id: int,
-                 generate: Callable[[str], str] | None) -> dict | None:
+BRIEF_COLUMNS = "id, company_id, brief, email_draft, status, mode, created_at, approved_at"
+
+
+def make_agent_llm():
+    """The tool-calling model for the research agent, or None (template) when offline or in
+    the public demo. Groq: OpenAI-style tool calling on the free tier."""
+    from app.config import get_settings
+    from app.llm import GroqClassifier
+
+    settings = get_settings()
+    if settings.demo_mode or not settings.groq_api_key:
+        return None
+    return GroqClassifier(settings.groq_api_key, settings.groq_model)
+
+
+def _with_steps(conn: psycopg.Connection, row: dict) -> dict:
+    steps = conn.execute("SELECT tool, input, result, ok FROM agent_steps WHERE brief_id = %s "
+                         "ORDER BY n", (row["id"],)).fetchall()
+    return row | {"steps": steps}
+
+
+def create_brief(conn: psycopg.Connection, company_id: int) -> dict | None:
     company = conn.execute("SELECT canonical_name, country, employees, industry, owner "
                            "FROM companies WHERE id = %s", (company_id,)).fetchone()
     score = conn.execute("SELECT total, tier, breakdown FROM scores WHERE company_id = %s",
@@ -104,16 +126,36 @@ def create_brief(conn: psycopg.Connection, company_id: int,
         return None
     contacts = conn.execute("SELECT name, title, seniority, email FROM contacts "
                             "WHERE company_id = %s", (company_id,)).fetchall()
-    brief, email = make_brief(company, score, contacts, generate)
-    return conn.execute(
-        "INSERT INTO briefs (company_id, brief, email_draft) VALUES (%s, %s, %s) "
-        "RETURNING id, company_id, brief, email_draft, status, created_at, approved_at",
-        (company_id, brief, email)).fetchone()
+    domains = [r["domain"] for r in conn.execute(
+        "SELECT domain FROM company_domains WHERE company_id = %s ORDER BY domain",
+        (company_id,))]
+    llm, steps, mode = make_agent_llm(), [], "template"
+    if llm is None:
+        brief, email = make_brief(company, score, contacts, generate=None)
+    else:
+        with httpx.Client() as client:
+            brief, email, steps = research(
+                company, score, contacts, domains, llm,
+                lambda url: safe_fetch(url, domains, client))
+        mode = "agent"
+    row = conn.execute(
+        f"INSERT INTO briefs (company_id, brief, email_draft, mode) VALUES (%s, %s, %s, %s) "
+        f"RETURNING {BRIEF_COLUMNS}", (company_id, brief, email, mode)).fetchone()
+    for n, step in enumerate(steps):
+        conn.execute("INSERT INTO agent_steps (brief_id, n, tool, input, result, ok) "
+                     "VALUES (%s, %s, %s, %s, %s, %s)",
+                     (row["id"], n, step["tool"], step["input"], step["result"], step["ok"]))
+    return _with_steps(conn, row)
+
+
+def get_brief(conn: psycopg.Connection, brief_id: int) -> dict | None:
+    row = conn.execute(f"SELECT {BRIEF_COLUMNS} FROM briefs WHERE id = %s",
+                       (brief_id,)).fetchone()
+    return _with_steps(conn, row) if row else None
 
 
 def approve_brief(conn: psycopg.Connection, brief_id: int) -> dict | None:
     """Idempotent: approving twice keeps the first approval time."""
     conn.execute("UPDATE briefs SET status = 'approved', approved_at = now() "
                  "WHERE id = %s AND status = 'draft'", (brief_id,))
-    return conn.execute("SELECT id, company_id, brief, email_draft, status, created_at, "
-                        "approved_at FROM briefs WHERE id = %s", (brief_id,)).fetchone()
+    return get_brief(conn, brief_id)

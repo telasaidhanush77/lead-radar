@@ -142,6 +142,15 @@ class GroqClassifier(_LLMClassifier):
     def complete(self, prompt: str) -> str:
         return self._chat(prompt, {"temperature": 0.4})
 
+    def chat_tools(self, messages: list[dict], tools: list[dict]) -> dict:
+        """One assistant turn with tool calling (used by the research agent)."""
+        data = post_json_with_retry(
+            self.client, self.URL, headers={"Authorization": f"Bearer {self.api_key}"},
+            json={"model": self.model, "temperature": 0.2, "messages": messages,
+                  "tools": tools, "tool_choice": "required" if len(tools) == 1 else "auto"},
+            sleep=self.sleep)
+        return data["choices"][0]["message"]
+
     def _chat(self, prompt: str, options: dict) -> str:
         data = post_json_with_retry(
             self.client, self.URL, headers={"Authorization": f"Bearer {self.api_key}"},

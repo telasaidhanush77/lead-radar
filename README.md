@@ -21,19 +21,21 @@ synthetic.
 ## Results
 
 <!-- results:start -->
-Measured 2026-11-18 at commit `3dd1a88`. Fuzzy threshold **92** (tuned on seed 1); numbers below are held-out seed 2.
+Measured 2026-11-18 at commit `3939d05`. Fuzzy threshold **92** (tuned on seed 1); numbers below are held-out seed 2.
 
 | Pipeline | |
 |---|---|
 | Leads in → true companies → found | 788 → 300 → 318 |
 | Dedupe precision / recall / F1 | 0.998 / 0.940 / 0.968 |
-| Throughput (ingest → CRM, 4 workers, laptop + Docker) | 12 leads/s |
+| Throughput (ingest → CRM, 4 workers, laptop + Docker) | 14 leads/s |
 | Dead jobs | 0 |
 | Re-run: new alerts / new CRM records / new companies | 0 / 0 / 0 |
 
 | Classifier (60 hand-labelled) | Industry acc. | Signal F1 | p50 latency | Fallbacks | Cost / 1k leads* |
 |---|---|---|---|---|---|
 | rules | 42% | 0.37 | 0 ms | 0 | $0.000 |
+| gemini (`gemini-3.8-flash`) | 53% | 0.68 | 6856 ms | 45 | $2.088 |
+| groq (`openai/gpt-oss-120b`) | 93% | 0.87 | 713 ms | 0 | $0.133 |
 
 Leakage check: rules score 76% on generated descriptions vs the hand-labelled figure above, so only the hand-labelled number is reported.
 

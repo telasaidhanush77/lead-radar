@@ -38,6 +38,7 @@ HERE = Path(__file__).resolve().parent
 THRESHOLDS = [80, 84, 86, 88, 90, 92, 95]
 PACE_S = {"gemini": 4.0, "groq": 3.0}  # free-tier friendly: Groq free = 30 req/min, 8K tok/min
 N_COMPANIES = 300
+DEMO_PROVIDER = "groq"  # 1K free requests/day; Gemini's free daily quota is far smaller
 WORKERS = 4
 
 
@@ -296,6 +297,8 @@ def main() -> None:
     parser.add_argument("--providers", nargs="+", default=["rules"],
                         choices=["rules", "gemini", "groq"])
     parser.add_argument("--fast", action="store_true", help="no free-tier pacing")
+    parser.add_argument("--classifiers-only", action="store_true",
+                        help="re-run only the classifier comparison; keep dedupe results")
     args = parser.parse_args()
     load_dotenv()
     logging.basicConfig(level=logging.WARNING)
@@ -304,23 +307,32 @@ def main() -> None:
     base = replace(get_settings(), database_url=url, llm_provider="rules", crm_provider="fake",
                    backoff_base_s=0, slack_webhook_url="", demo_mode=False)
 
-    print("tuning threshold on seed 1 ...")
-    seed1 = generate(1, N_COMPANIES)
-    tuning = {t: dedupe_run(url, replace(base, fuzzy_threshold=t), seed1)["f1"]
-              for t in THRESHOLDS}
-    best = max(THRESHOLDS, key=lambda t: (round(tuning[t], 4), t))  # tie -> stricter
-    print("  F1 by threshold:", {t: round(f, 3) for t, f in tuning.items()}, "-> best", best)
+    results_path = HERE / "results.json"
+    previous = (json.loads(results_path.read_text(encoding="utf-8"))
+                if args.classifiers_only else None)
+    if previous:
+        best, tuning = previous["threshold"], previous["tuning_f1"]
+        dedupe, idem = previous["dedupe"], previous["idempotency"]
+        settings = replace(base, fuzzy_threshold=best)
+    else:
+        print("tuning threshold on seed 1 ...")
+        seed1 = generate(1, N_COMPANIES)
+        tuning = {t: dedupe_run(url, replace(base, fuzzy_threshold=t), seed1)["f1"]
+                  for t in THRESHOLDS}
+        best = max(THRESHOLDS, key=lambda t: (round(tuning[t], 4), t))  # tie -> stricter
+        print("  F1 by threshold:", {t: round(f, 3) for t, f in tuning.items()}, "-> best", best)
 
-    print("held-out seed 2 ...")
-    settings = replace(base, fuzzy_threshold=best)
-    dedupe = dedupe_run(url, settings, generate(2, N_COMPANIES))
-    idem = idempotency_check(url, settings)
-    if any(idem.values()):
-        raise SystemExit(f"IDEMPOTENCY FAILED: re-run changed {idem}")
+        print("held-out seed 2 ...")
+        settings = replace(base, fuzzy_threshold=best)
+        dedupe = dedupe_run(url, settings, generate(2, N_COMPANIES))
+        idem = idempotency_check(url, settings)
+        if any(idem.values()):
+            raise SystemExit(f"IDEMPOTENCY FAILED: re-run changed {idem}")
 
     rows = [json.loads(line) for line in (HERE / "labelled.jsonl").read_text(
         encoding="utf-8").splitlines() if line.strip()]
-    classifiers, cache = {}, []
+    classifiers = dict(previous["classifiers"]) if previous else {}
+    cache = []
     for provider in args.providers:
         print(f"classifier: {provider} ...")
         try:
@@ -330,7 +342,7 @@ def main() -> None:
             continue
         cache += result.pop("_cache")
         classifiers[provider] = result
-        if provider != "rules":
+        if provider == DEMO_PROVIDER:
             print(f"  warming demo cache for {provider} ...")
             cache += warm_demo_cache(provider, settings, args.fast)
 

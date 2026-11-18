@@ -1,7 +1,7 @@
 import hmac
 import json
 import time
-from collections.abc import Callable, Iterator
+from collections.abc import Iterator
 from contextlib import asynccontextmanager
 from pathlib import Path
 from uuid import uuid4
@@ -12,7 +12,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from psycopg.types.json import Jsonb
 
 from app import queue
-from app.brief import approve_brief, create_brief
+from app.brief import approve_brief, create_brief, get_brief
 from app.config import get_settings
 from app.dashboard import render_dashboard
 from app.db import get_pool, migrate
@@ -155,21 +155,10 @@ def demo_run(conn: psycopg.Connection = Depends(get_conn)) -> dict:
     return {"accepted": accepted}
 
 
-def brief_generator() -> Callable[[str], str] | None:
-    """Free-text generation for briefs, or None (template) offline / in the public demo."""
-    settings = get_settings()
-    if settings.demo_mode or settings.llm_provider == "rules":
-        return None
-    from app.llm import make_llm_classifier
-
-    llm = make_llm_classifier(settings)
-    return llm.complete
-
-
 @app.post("/companies/{company_id}/brief", status_code=201,
           dependencies=[Depends(require_admin)])
 def new_brief(company_id: int, conn: psycopg.Connection = Depends(get_conn)) -> dict:
-    row = create_brief(conn, company_id, brief_generator())
+    row = create_brief(conn, company_id)
     if row is None:
         raise HTTPException(404, "no scored company with that id")
     return row
@@ -178,6 +167,14 @@ def new_brief(company_id: int, conn: psycopg.Connection = Depends(get_conn)) -> 
 @app.post("/briefs/{brief_id}/approve", dependencies=[Depends(require_admin)])
 def approve(brief_id: int, conn: psycopg.Connection = Depends(get_conn)) -> dict:
     row = approve_brief(conn, brief_id)
+    if row is None:
+        raise HTTPException(404, "no brief with that id")
+    return row
+
+
+@app.get("/briefs/{brief_id}", dependencies=[Depends(require_admin)])
+def read_brief(brief_id: int, conn: psycopg.Connection = Depends(get_conn)) -> dict:
+    row = get_brief(conn, brief_id)
     if row is None:
         raise HTTPException(404, "no brief with that id")
     return row

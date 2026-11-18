@@ -151,3 +151,24 @@ def test_non_idempotent_post_retries_429_but_not_503():
     with pytest.raises(LLMError, match="503"):
         post_json_with_retry(client_returning(httpx.Response(503)), "https://x/y", json={},
                              headers={}, sleep=sleeps.append, idempotent=False)
+
+
+def test_groq_chat_tools_sends_tools_and_returns_message():
+    seen = []
+    reply = {"choices": [{"message": {"role": "assistant", "content": None, "tool_calls": [
+        {"id": "a", "type": "function",
+         "function": {"name": "finish", "arguments": "{}"}}]}}]}
+    c = GroqClassifier("key", "m", client_returning(httpx.Response(200, json=reply), seen=seen))
+    two = [{"type": "function", "n": 1}, {"type": "function", "n": 2}]
+    msg = c.chat_tools([{"role": "user", "content": "hi"}], two)
+    body = json.loads(seen[0].content)
+    assert body["tools"] == two and body["tool_choice"] == "auto"
+    assert msg["tool_calls"][0]["function"]["name"] == "finish"
+
+
+def test_single_tool_is_required():
+    seen = []
+    reply = {"choices": [{"message": {"role": "assistant", "content": "x"}}]}
+    c = GroqClassifier("key", "m", client_returning(httpx.Response(200, json=reply), seen=seen))
+    c.chat_tools([{"role": "user", "content": "hi"}], [{"type": "function"}])
+    assert json.loads(seen[0].content)["tool_choice"] == "required"

@@ -15,7 +15,7 @@ class Settings:
     llm_provider: str = "rules"
     crm_provider: str = "fake"
     gemini_api_key: str = ""
-    gemini_model: str = "gemini-3.8-flash"
+    gemini_model: str = "gemini-3.5-flash-lite"
     groq_api_key: str = ""
     groq_model: str = "openai/gpt-oss-120b"
     hubspot_token: str = ""
@@ -36,7 +36,7 @@ def get_settings() -> Settings:
         llm_provider=env("LLM_PROVIDER", "rules"),
         crm_provider=env("CRM_PROVIDER", "fake"),
         gemini_api_key=env("GEMINI_API_KEY", ""),
-        gemini_model=env("GEMINI_MODEL", "gemini-3.8-flash"),
+        gemini_model=env("GEMINI_MODEL", "gemini-3.5-flash-lite"),
         groq_api_key=env("GROQ_API_KEY", ""),
         groq_model=env("GROQ_MODEL", "openai/gpt-oss-120b"),
         hubspot_token=env("HUBSPOT_TOKEN", ""),

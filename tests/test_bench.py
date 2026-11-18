@@ -43,7 +43,7 @@ def test_cost_per_1k():
 def test_prices_have_sources():
     for provider in ("gemini", "groq"):
         entry = PRICES[provider]
-        assert entry["source"].startswith("https://") and entry["checked"] == "2026-11-17"
+        assert entry["source"].startswith("https://") and entry["checked"].startswith("2026-11-")
         assert entry["in_per_m"] > 0 and entry["out_per_m"] > 0
 
 

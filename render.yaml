@@ -16,7 +16,7 @@ services:
         value: "1"
       - key: DEMO_MODE           # LLM answers replayed from bench/classify_cache.jsonl
         value: "1"
-      - key: LLM_PROVIDER
-        value: gemini
+      - key: LLM_PROVIDER        # the demo cache holds Groq answers for the demo dataset
+        value: groq
       - key: CRM_PROVIDER
         value: fake

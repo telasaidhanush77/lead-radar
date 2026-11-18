@@ -70,3 +70,33 @@ def test_approve_sets_status_and_is_idempotent(client, db):
     assert first.json()["status"] == "approved"
     assert first.json()["approved_at"] == second.json()["approved_at"]
     assert client.post("/briefs/9/approve", headers=ADMIN).status_code == 404
+
+
+def test_agent_steps_saved_and_returned(client, db, monkeypatch):
+    from app import brief as brief_module
+
+    seed(db)
+    db.execute("INSERT INTO company_domains VALUES ('m.de', 1)")
+    db.commit()
+
+    def fake_research(company, score, contacts, domains, llm, fetch):
+        assert domains == ["m.de"]
+        return "Agent brief", "Subject: Hi\n\nHi Jan", [
+            {"tool": "fetch_page", "input": '{"url": "https://m.de/"}', "result": "Brakes",
+             "ok": True},
+            {"tool": "finish", "input": "", "result": "", "ok": True}]
+
+    monkeypatch.setattr(brief_module, "research", fake_research)
+    monkeypatch.setattr(brief_module, "make_agent_llm", lambda: object())
+    body = client.post("/companies/1/brief", headers=ADMIN).json()
+    assert body["brief"] == "Agent brief" and body["mode"] == "agent"
+    assert [s["tool"] for s in body["steps"]] == ["fetch_page", "finish"]
+    again = client.get("/briefs/1", headers=ADMIN).json()
+    assert again["steps"] == body["steps"]
+
+
+def test_offline_brief_is_template_mode(client, db):
+    seed(db)
+    body = client.post("/companies/1/brief", headers=ADMIN).json()
+    assert body["mode"] == "template" and body["steps"] == []
+    assert client.get("/briefs/1").status_code == 401

@@ -1,6 +1,6 @@
 {
   "date": "2026-11-18",
-  "commit": "3dd1a88",
+  "commit": "3939d05",
   "threshold": 92,
   "tuning_f1": {
     "80": 0.967642526964561,
@@ -15,7 +15,7 @@
     "precision": 0.9978969505783386,
     "recall": 0.9396039603960396,
     "f1": 0.9678735339112697,
-    "seconds": 66.76540929998737,
+    "seconds": 55.02167849999387,
     "dead_jobs": 0,
     "leads": 788,
     "companies_true": 300,
@@ -30,9 +30,25 @@
     "rules": {
       "industry_accuracy": 0.4166666666666667,
       "signal_f1": 0.37209302325581395,
-      "p50_latency_ms": 0.07399998139590025,
+      "p50_latency_ms": 0.05465000867843628,
       "fallbacks": 0,
       "cost_per_1k_usd": 0.0
+    },
+    "gemini": {
+      "industry_accuracy": 0.5333333333333333,
+      "signal_f1": 0.6792452830188679,
+      "p50_latency_ms": 6855.986150010722,
+      "fallbacks": 45,
+      "cost_per_1k_usd": 2.0884500000000004,
+      "model": "gemini-3.8-flash"
+    },
+    "groq": {
+      "industry_accuracy": 0.9333333333333333,
+      "signal_f1": 0.8656716417910447,
+      "p50_latency_ms": 712.5374499883037,
+      "fallbacks": 0,
+      "cost_per_1k_usd": 0.13268000000000002,
+      "model": "openai/gpt-oss-120b"
     }
   },
   "rules_generated_accuracy": 0.7613636363636364,
@@ -47,7 +63,7 @@
     ],
     [
       "Pipeline throughput",
-      "12 leads/s"
+      "14 leads/s"
     ],
     [
       "Re-run: new alerts / CRM records",
@@ -56,6 +72,14 @@
     [
       "rules industry accuracy (hand-labelled)",
       "42%"
+    ],
+    [
+      "gemini industry accuracy (hand-labelled)",
+      "53%"
+    ],
+    [
+      "groq industry accuracy (hand-labelled)",
+      "93%"
     ]
   ]
 }
