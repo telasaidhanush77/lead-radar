@@ -1,6 +1,6 @@
 {
-  "date": "2026-11-17",
-  "commit": "29ef3ce",
+  "date": "2026-11-18",
+  "commit": "3dd1a88",
   "threshold": 92,
   "tuning_f1": {
     "80": 0.967642526964561,
@@ -15,7 +15,7 @@
     "precision": 0.9978969505783386,
     "recall": 0.9396039603960396,
     "f1": 0.9678735339112697,
-    "seconds": 58.22051170002669,
+    "seconds": 66.76540929998737,
     "dead_jobs": 0,
     "leads": 788,
     "companies_true": 300,
@@ -30,11 +30,12 @@
     "rules": {
       "industry_accuracy": 0.4166666666666667,
       "signal_f1": 0.37209302325581395,
-      "p50_latency_ms": 0.0807500327937305,
+      "p50_latency_ms": 0.07399998139590025,
       "fallbacks": 0,
       "cost_per_1k_usd": 0.0
     }
   },
+  "rules_generated_accuracy": 0.7613636363636364,
   "summary": [
     [
       "Dedupe F1 (held-out seed 2)",
@@ -46,7 +47,7 @@
     ],
     [
       "Pipeline throughput",
-      "14 leads/s"
+      "12 leads/s"
     ],
     [
       "Re-run: new alerts / CRM records",
