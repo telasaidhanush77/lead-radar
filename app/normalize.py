@@ -155,16 +155,24 @@ def department(title: str | None) -> str:
     return _first_match(_DEPARTMENT, title, "other") or "other"
 
 
+MAX_EMPLOYEES = 5_000_000  # above any real employer; also keeps the value inside an int column
+
+
 def parse_employees(value: object) -> int | None:
-    """'1,200' -> 1200, '50-200' -> 125 (midpoint). Anything vaguer -> None."""
+    """'1,200' -> 1200, '50-200' -> 125 (midpoint). Anything vaguer or absurd -> None."""
     if isinstance(value, bool):
         return None
     if isinstance(value, int):
-        return value if value >= 0 else None
-    text = (_clean(value) or "").replace(",", "").replace(" ", "")
-    if m := re.fullmatch(r"(\d+)-(\d+)", text):
-        return (int(m[1]) + int(m[2])) // 2
-    return int(text) if text.isdigit() else None
+        number = value
+    else:
+        text = (_clean(value) or "").replace(",", "").replace(" ", "")
+        if m := re.fullmatch(r"(\d+)-(\d+)", text):
+            number = (int(m[1]) + int(m[2])) // 2
+        elif text.isdigit():
+            number = int(text)
+        else:
+            return None
+    return number if 0 <= number <= MAX_EMPLOYEES else None
 
 
 def normalize_lead(payload: dict) -> NormalizedLead:

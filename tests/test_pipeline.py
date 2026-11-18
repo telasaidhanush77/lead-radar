@@ -15,8 +15,9 @@ LEAD = {
 def test_one_lead_end_to_end(db):
     store_lead(db, "test", "e2e-1", LEAD)
     db.commit()
-    assert drain(get_pool(), get_settings()) == 5  # process -> enrich -> score -> route -> crm
-    assert queue.counts(db) == {"done": 5}
+    # process -> enrich -> score -> route -> (crm_sync -> crm_contacts) + alert
+    assert drain(get_pool(), get_settings()) == 7
+    assert queue.counts(db) == {"done": 7}
     company = db.execute("SELECT industry, route, owner, alerted_at IS NOT NULL AS alerted "
                          "FROM companies").fetchone()
     assert company == {"industry": "automotive", "route": "ae", "owner": "anna", "alerted": True}

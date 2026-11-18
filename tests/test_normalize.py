@@ -74,6 +74,7 @@ def test_department(title, expected):
 
 @pytest.mark.parametrize("raw,expected", [
     ("200", 200), ("1,200", 1200), ("50-200", 125), (75, 75), ("about 40", None), (None, None),
+    ("99999999999", None), (10**12, None),
 ])
 def test_employees_parsing(raw, expected):
     assert parse_employees(raw) == expected

@@ -56,3 +56,14 @@ def test_write_readme_replaces_only_the_results_block(tmp_path):
     write_readme("| new |", readme)
     assert readme.read_text(encoding="utf-8") == (
         "# T\n<!-- results:start -->\n| new |\n<!-- results:end -->\nkeep\n")
+
+
+def test_markdown_reports_leakage_check():
+    from bench.run import markdown
+
+    d = {"leads": 10, "companies_true": 5, "companies_found": 5, "precision": 1, "recall": 1,
+         "f1": 1, "seconds": 1, "dead_jobs": 0}
+    results = {"date": "x", "commit": "y", "threshold": 92, "dedupe": d,
+               "idempotency": {"alerts": 0, "crm": 0, "companies": 0}, "classifiers": {},
+               "rules_generated_accuracy": 0.71}
+    assert "71%" in markdown(results)

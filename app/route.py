@@ -74,8 +74,8 @@ def send_alert(settings: Settings, company: dict, score: dict) -> None:
 
 
 def route_company(conn: psycopg.Connection, payload: dict, settings: Settings) -> None:
-    """Job handler. If the Slack call raises, the whole transaction (alerted_at included)
-    rolls back and the job retries, so the alert is neither lost nor sent twice on success."""
+    """Job handler: owner + route + queue CRM sync. A tier-A company also gets an `alert`
+    job, so a Slack outage can only delay the alert, never the routing or the CRM sync."""
     company_id = payload["company_id"]
     score = conn.execute("SELECT total, tier, breakdown FROM scores WHERE company_id = %s",
                          (company_id,)).fetchone()
@@ -84,8 +84,19 @@ def route_company(conn: psycopg.Connection, payload: dict, settings: Settings) -
     assign_owner(conn, company_id, region_for(country))
     conn.execute("UPDATE companies SET route = %s, updated_at = now() WHERE id = %s",
                  (route_for(score["tier"]), company_id))
-    if score["tier"] == "A" and claim_alert(conn, company_id):
-        company = conn.execute("SELECT id, canonical_name, country, owner FROM companies "
-                               "WHERE id = %s", (company_id,)).fetchone()
-        send_alert(settings, company, score)
     enqueue(conn, "crm_sync", {"company_id": company_id})
+    if score["tier"] == "A":
+        enqueue(conn, "alert", {"company_id": company_id})
+
+
+def alert_company(conn: psycopg.Connection, payload: dict, settings: Settings) -> None:
+    """Job handler. claim_alert makes it once-only even if several alert jobs exist; if the
+    Slack call raises, the claim rolls back with the transaction and the job retries."""
+    company_id = payload["company_id"]
+    if not claim_alert(conn, company_id):
+        return
+    company = conn.execute("SELECT id, canonical_name, country, owner FROM companies "
+                           "WHERE id = %s", (company_id,)).fetchone()
+    score = conn.execute("SELECT total, tier, breakdown FROM scores WHERE company_id = %s",
+                         (company_id,)).fetchone()
+    send_alert(settings, company, score)

@@ -323,6 +323,18 @@ def generate(seed: int, n_companies: int = 300) -> list[dict]:
     return leads
 
 
+DEMO_SEED, DEMO_COMPANIES = 2026, 80
+
+
+def demo_leads(run_id: str) -> list[dict]:
+    """The public demo's dataset: always the same companies and descriptions (so the benchmark
+    can pre-cache LLM answers for exactly these texts), with fresh keys per click."""
+    leads = generate(DEMO_SEED, DEMO_COMPANIES)
+    for lead in leads:
+        lead["_key"] = f"demo-{run_id}-{lead['_key']}"
+    return leads
+
+
 if __name__ == "__main__":  # python -m bench.generate 1 5
     import json
     import sys

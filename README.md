@@ -15,7 +15,7 @@ synthetic.
                      (verbatim,     normalize      Gemini /   rules,   region,   HubSpot or
                       idempotent)   dedupe/merge   Groq /     explain- sticky    fake table,
                                                    rules      able     owner,    hash-skip
-                                                                       1 alert
+                                                                       alert job
 ```
 
 ## Results
@@ -43,8 +43,8 @@ How the numbers are kept honest:
   Precision/recall are pairwise against the generator's ground truth (`_entity`).
 - **Classifiers:** scored on **60 hand-written descriptions** (`bench/labelled.jsonl`): English,
   German, French and Dutch, ~10 deliberately tricky. They are never produced by the generator.
-  The keyword rules score 71% on generated text but 42% here, which is exactly the leakage this
-  avoids.
+  The benchmark also scores the keyword rules on generated text and prints both figures, so the
+  leakage this avoids is visible (see the line under the results table).
 - **Idempotency:** the benchmark re-runs every lead through the whole pipeline and **fails** if
   that creates a single new alert, CRM record or company.
 - **Throughput** is measured on a laptop with Postgres in Docker Desktop. Profiling shows ~97%
@@ -78,7 +78,8 @@ python scripts/send_webhook.py http://localhost:8000 change-me    # -> 202 accep
 
 **Deploy ($0):** `render.yaml` runs the Docker image on Render's free plan with Neon Postgres.
 The worker runs as a thread in the web process (the free plan has no worker services), and the
-public demo replays cached LLM answers, so visitors never spend API quota. The free plan sleeps
+public demo replays LLM answers the benchmark pre-computed for the demo dataset, so visitors
+never spend API quota (until the benchmark has run with API keys, the demo uses the rules). The free plan sleeps
 when idle, so the first request can take ~50 s.
 
 ## How scoring works
@@ -103,7 +104,8 @@ Tier **A ≥ 70** → AE alert (once per company, ever) · **B ≥ 40** → BDR 
   failures back off exponentially and land in a visible dead-letter list with a Retry button.
 - **Idempotent everywhere:** webhook idempotency keys (`ON CONFLICT DO NOTHING`), contact upserts
   by email, a compare-and-set `alerted_at` for the one-time alert, content-hash skip for CRM
-  writes, and stored CRM ids so companies without a domain never duplicate.
+  writes. CRM sync locks the company row and commits the CRM id before syncing contacts, and a
+  create is never retried after a 5xx, so retries and parallel workers don't duplicate records.
 - **Entity resolution:** exact domain → fuzzy name (`rapidfuzz`) within the same country →
   new company. Per-field provenance: the newest non-null value wins, by the time the lead
   was received rather than the order it was processed in.
@@ -118,6 +120,6 @@ Tier **A ≥ 70** → AE alert (once per company, ever) · **B ≥ 40** → BDR 
   step past ~50k companies. Dedupe runs under one advisory lock (simple and correct, but
   serialised).
 - One-way CRM sync; HubSpot gets standard fields only (the score rides in `description`).
-- A Slack alert can repeat if the process dies between sending and committing; a transactional
-  outbox would fix that.
+- The AE alert is its own job, so a Slack outage only delays it. A crash between sending and
+  committing can still repeat one alert; a delivery-id dedupe on the receiving side would fix it.
 - Synthetic data: realistic mess, but not real-world distributions.

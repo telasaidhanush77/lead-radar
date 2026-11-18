@@ -31,7 +31,7 @@ from app.config import Settings, get_settings
 from app.db import migrate
 from app.ingest import store_lead
 from app.worker import drain, run_once
-from bench.generate import generate
+from bench.generate import demo_leads, generate
 from bench.pricing import PRICES, cost_per_1k
 
 HERE = Path(__file__).resolve().parent
@@ -168,6 +168,31 @@ def make_classifier(provider: str, settings: Settings):
     return make_llm_classifier(replace(settings, llm_provider=provider))
 
 
+def warm_demo_cache(provider: str, settings: Settings, fast: bool) -> list[dict]:
+    """LLM answers for every distinct demo description, so the public demo (DEMO_MODE)
+    replays real answers instead of falling back to rules. Not scored."""
+    texts = sorted({lead["description"] for lead in demo_leads("x") if lead.get("description")})
+    clf, cache = make_classifier(provider, settings), []
+    for i, text in enumerate(texts):
+        if i and not fast:
+            time.sleep(PACE_S[provider])
+        result = clf.classify(text)
+        if not clf.last_was_fallback:
+            cache.append({"provider": provider, "content_hash": content_hash(text),
+                          "result": result.to_json(), "latency_ms": None})
+    return cache
+
+
+def rules_generated_accuracy(leads: list[dict]) -> float:
+    """Rules scored on generator text: shown next to the hand-labelled score as the
+    leakage check (same author wrote the templates and the keywords)."""
+    rows = [lead for lead in leads if lead.get("description")]
+    rules = RulesClassifier()
+    hits = sum(rules.classify(r["description"]).industry == r["_labels"]["industry"]
+               for r in rows)
+    return hits / len(rows)
+
+
 def classifier_run(provider: str, settings: Settings, rows: list[dict], fast: bool) -> dict:
     clf = make_classifier(provider, settings)
     preds, latencies, cache = [], [], []
@@ -248,6 +273,10 @@ def markdown(results: dict) -> str:
         lines.append(f"| {label} | {c['industry_accuracy']:.0%} | {c['signal_f1']:.2f} | "
                      f"{c['p50_latency_ms']:.0f} ms | {c['fallbacks']} | "
                      f"${c['cost_per_1k_usd']:.3f} |")
+    if "rules_generated_accuracy" in results:
+        lines += ["", f"Leakage check: rules score {results['rules_generated_accuracy']:.0%} on "
+                      "generated descriptions vs the hand-labelled figure above, so only the "
+                      "hand-labelled number is reported."]
     lines += ["", "*At the provider's paid list price (see `bench/pricing.py`); "
                   "this project runs on free tiers, so actual spend is $0."]
     return "\n".join(lines)
@@ -301,15 +330,23 @@ def main() -> None:
             continue
         cache += result.pop("_cache")
         classifiers[provider] = result
+        if provider != "rules":
+            print(f"  warming demo cache for {provider} ...")
+            cache += warm_demo_cache(provider, settings, args.fast)
 
     results = {"date": date.today().isoformat(), "commit": git_commit(), "threshold": best,
                "tuning_f1": tuning, "dedupe": dedupe, "idempotency": idem,
-               "classifiers": classifiers}
+               "classifiers": classifiers,
+               "rules_generated_accuracy": rules_generated_accuracy(generate(2, N_COMPANIES))}
     results["summary"] = summarize(results)
     (HERE / "results.json").write_text(json.dumps(results, indent=2), encoding="utf-8")
-    if cache:
-        with (HERE / "classify_cache.jsonl").open("a", encoding="utf-8") as f:
-            f.writelines(json.dumps(row) + "\n" for row in cache)
+    if cache:  # rewrite, de-duplicated, so re-runs don't grow the file
+        path = HERE / "classify_cache.jsonl"
+        old = [json.loads(x) for x in path.read_text(encoding="utf-8").splitlines()
+               if x.strip()] if path.exists() else []
+        merged = {(r["provider"], r["content_hash"]): r for r in old + cache}
+        path.write_text("".join(json.dumps(r) + "\n" for r in merged.values()),
+                        encoding="utf-8")
     table = markdown(results)
     write_readme(table)
     print()

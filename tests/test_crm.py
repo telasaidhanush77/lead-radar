@@ -4,8 +4,17 @@ from dataclasses import replace
 import httpx
 import pytest
 
+from app import crm as crm_module
 from app.config import get_settings
-from app.crm import FakeCRM, HubSpotCRM, company_props, crm_sync, get_crm, props_hash
+from app.crm import (
+    FakeCRM,
+    HubSpotCRM,
+    company_props,
+    crm_contacts,
+    crm_sync,
+    get_crm,
+    props_hash,
+)
 
 
 def add_company(db, name="Acme GmbH", domain="acme.de"):
@@ -18,6 +27,12 @@ def add_company(db, name="Acme GmbH", domain="acme.de"):
     db.execute("INSERT INTO contacts (email, name, title, company_id) VALUES "
                "('jan@acme.de', 'Jan Weber', 'CISO', %s)", (cid,))
     return cid
+
+
+def sync(db, cid):
+    """Both CRM jobs, as the worker would run them."""
+    crm_sync(db, {"company_id": cid}, get_settings())
+    crm_contacts(db, {"company_id": cid}, get_settings())
 
 
 def fake_rows(db):
@@ -39,7 +54,7 @@ def test_props_hash_is_order_independent():
 
 def test_fake_sync_creates_records(db):
     cid = add_company(db)
-    crm_sync(db, {"company_id": cid}, get_settings())
+    sync(db, cid)
     assert fake_rows(db) == [
         {"object": "company", "key": "acme.de", "external_id": "fake-company-acme.de"},
         {"object": "contact", "key": "jan@acme.de", "external_id": "fake-contact-jan@acme.de"}]
@@ -49,35 +64,35 @@ def test_fake_sync_creates_records(db):
 
 def test_resync_unchanged_skips(db, monkeypatch):
     cid = add_company(db)
-    crm_sync(db, {"company_id": cid}, get_settings())
+    sync(db, cid)
     calls = []
     monkeypatch.setattr(FakeCRM, "upsert_company", lambda *a: calls.append(a))
-    crm_sync(db, {"company_id": cid}, get_settings())
+    sync(db, cid)
     assert calls == []
 
 
 def test_changed_props_resync(db):
     cid = add_company(db)
-    crm_sync(db, {"company_id": cid}, get_settings())
+    sync(db, cid)
     db.execute("UPDATE companies SET employees = 300")
-    crm_sync(db, {"company_id": cid}, get_settings())
+    sync(db, cid)
     props = db.execute("SELECT props FROM fake_crm WHERE object='company'").fetchone()["props"]
     assert props["numberofemployees"] == 300 and len(fake_rows(db)) == 2
 
 
 def test_new_contact_triggers_resync(db):
     cid = add_company(db)
-    crm_sync(db, {"company_id": cid}, get_settings())
+    sync(db, cid)
     db.execute("INSERT INTO contacts (email, company_id) VALUES ('new@acme.de', %s)", (cid,))
-    crm_sync(db, {"company_id": cid}, get_settings())
+    sync(db, cid)
     assert [r["key"] for r in fake_rows(db)] == ["acme.de", "jan@acme.de", "new@acme.de"]
 
 
 def test_company_without_domain_keeps_its_crm_record(db):
     cid = add_company(db, domain=None)
-    crm_sync(db, {"company_id": cid}, get_settings())
+    sync(db, cid)
     db.execute("UPDATE companies SET employees = 300")
-    crm_sync(db, {"company_id": cid}, get_settings())
+    sync(db, cid)
     assert len([r for r in fake_rows(db) if r["object"] == "company"]) == 1
 
 
@@ -133,3 +148,79 @@ def test_hubspot_contact_upsert_by_email_and_associate():
 def test_hubspot_without_token_fails_fast(db):
     with pytest.raises(ValueError, match="HUBSPOT_TOKEN"):
         get_crm(replace(get_settings(), crm_provider="hubspot", hubspot_token=""), db)
+
+
+def test_concurrent_syncs_create_one_crm_company(db):
+    import threading
+
+    import psycopg
+    from psycopg.rows import dict_row
+
+    from tests.conftest import TEST_DB
+
+    cid = add_company(db, domain=None)
+    db.commit()
+    first = psycopg.connect(TEST_DB, row_factory=dict_row)
+    crm_sync(first, {"company_id": cid}, get_settings())  # not committed yet: holds the lock
+    done = []
+
+    def second():
+        with psycopg.connect(TEST_DB, row_factory=dict_row) as conn:
+            crm_sync(conn, {"company_id": cid}, get_settings())
+            done.append(True)
+
+    t = threading.Thread(target=second)
+    t.start()
+    t.join(0.5)
+    assert done == []  # waits for the first sync instead of racing it
+    first.commit()
+    first.close()
+    t.join(5)
+    companies = db.execute("SELECT count(*) AS n FROM fake_crm WHERE object = 'company'")
+    assert companies.fetchone()["n"] == 1
+
+
+class FlakyCRM:
+    def __init__(self):
+        self.creates = 0
+
+    def upsert_company(self, domain, props, external_id):
+        if external_id:
+            return external_id
+        self.creates += 1
+        return f"hs-{self.creates}"
+
+    def upsert_contact(self, email, props, company_external_id):
+        raise RuntimeError("HTTP 400: invalid email")
+
+
+def test_contact_failure_never_recreates_company(db, monkeypatch):
+    from app import queue
+    from app.db import get_pool
+    from app.worker import drain
+
+    flaky = FlakyCRM()
+    monkeypatch.setattr(crm_module, "get_crm", lambda settings, conn: flaky)
+    cid = add_company(db, domain=None)
+    queue.enqueue(db, "crm_sync", {"company_id": cid})
+    db.commit()
+    drain(get_pool(), get_settings())
+    assert flaky.creates == 1
+    statuses = {r["kind"]: r["status"] for r in db.execute("SELECT kind, status FROM jobs")}
+    assert statuses == {"crm_sync": "done", "crm_contacts": "dead"}
+
+
+def test_hubspot_create_is_not_retried_after_5xx():
+    seen = []
+
+    def handler(request):
+        seen.append((request.method, request.url.path))
+        if request.url.path.endswith("/search"):
+            return httpx.Response(200, json={"total": 0, "results": []})
+        return httpx.Response(503)
+
+    crm = HubSpotCRM("tok", httpx.Client(transport=httpx.MockTransport(handler),
+                                         base_url="https://api.hubapi.com"))
+    with pytest.raises(Exception, match="503"):
+        crm.upsert_company("acme.de", {"name": "Acme"}, None)
+    assert seen.count(("POST", "/crm/v3/objects/companies")) == 1

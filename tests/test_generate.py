@@ -3,7 +3,7 @@ from collections import Counter
 from pathlib import Path
 
 from app.classify import INDUSTRIES, SIGNALS
-from bench.generate import generate
+from bench.generate import demo_leads, generate
 
 LABELLED = Path(__file__).resolve().parent.parent / "bench" / "labelled.jsonl"
 
@@ -56,3 +56,9 @@ def test_labelled_set_valid():
     assert len({r["text"] for r in rows}) == 60
     generated = {lead.get("description") for seed in (1, 2) for lead in generate(seed, 300)}
     assert not generated & {r["text"] for r in rows}
+
+
+def test_demo_leads_same_texts_fresh_keys():
+    a, b = demo_leads("run1"), demo_leads("run2")
+    assert [x.get("description") for x in a] == [x.get("description") for x in b]
+    assert not {x["_key"] for x in a} & {x["_key"] for x in b}

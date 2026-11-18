@@ -10,11 +10,11 @@ from psycopg_pool import ConnectionPool
 from app import queue
 from app.classify import enrich
 from app.config import Settings, get_settings
-from app.crm import crm_sync
+from app.crm import crm_contacts, crm_sync
 from app.db import get_pool
 from app.dedupe import process_lead
 from app.log import job_id
-from app.route import route_company
+from app.route import alert_company, route_company
 from app.score import score_company
 
 log = logging.getLogger("worker")
@@ -26,6 +26,8 @@ HANDLERS: dict[str, Handler] = {
     "score": score_company,
     "route": route_company,
     "crm_sync": crm_sync,
+    "crm_contacts": crm_contacts,
+    "alert": alert_company,
 }
 IDLE_SLEEP_S = 0.5
 

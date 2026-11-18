@@ -64,6 +64,7 @@ def test_alert_fires_once(db, alerts):
     cid = add_company(db, tier="A")
     for _ in range(3):
         route.route_company(db, {"company_id": cid}, get_settings())
+        route.alert_company(db, {"company_id": cid}, get_settings())
     assert alerts == [cid]
     assert db.execute("SELECT alerted_at IS NOT NULL AS ok FROM companies").fetchone()["ok"]
 
@@ -71,6 +72,13 @@ def test_alert_fires_once(db, alerts):
 def test_tier_b_no_alert(db, alerts):
     route.route_company(db, {"company_id": add_company(db, tier="B")}, get_settings())
     assert alerts == []
+    assert db.execute("SELECT count(*) AS n FROM jobs WHERE kind = 'alert'").fetchone()["n"] == 0
+
+
+def test_tier_a_queues_alert_and_crm(db, alerts):
+    route.route_company(db, {"company_id": add_company(db, tier="A")}, get_settings())
+    kinds = sorted(r["kind"] for r in db.execute("SELECT kind FROM jobs"))
+    assert kinds == ["alert", "crm_sync"] and alerts == []
 
 
 def test_slack_payload(db, monkeypatch):
@@ -78,7 +86,9 @@ def test_slack_payload(db, monkeypatch):
     monkeypatch.setattr(route, "make_client", lambda: httpx.Client(transport=httpx.MockTransport(
         lambda req: seen.append(req) or httpx.Response(200))))
     settings = replace(get_settings(), slack_webhook_url="https://hooks.slack.test/x")
-    route.route_company(db, {"company_id": add_company(db)}, settings)
+    cid = add_company(db)
+    route.route_company(db, {"company_id": cid}, settings)
+    route.alert_company(db, {"company_id": cid}, settings)
     assert len(seen) == 1 and b"Acme" in seen[0].content and b"tisax" in seen[0].content
 
 
@@ -90,5 +100,8 @@ def test_slack_failure_rolls_back_alert(db, monkeypatch):
     db.commit()
     settings = replace(get_settings(), slack_webhook_url="https://hooks.slack.test/x")
     drain(get_pool(), settings)
-    assert db.execute("SELECT alerted_at FROM companies").fetchone() == {"alerted_at": None}
-    assert db.execute("SELECT status FROM jobs").fetchone() == {"status": "dead"}
+    company = db.execute("SELECT owner, alerted_at FROM companies").fetchone()
+    assert company == {"owner": "anna", "alerted_at": None}  # routed; alert retryable
+    jobs = {r["kind"]: r["status"] for r in db.execute("SELECT kind, status FROM jobs")}
+    assert jobs == {"route": "done", "alert": "dead", "crm_sync": "done",
+                    "crm_contacts": "done"}

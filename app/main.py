@@ -1,6 +1,5 @@
 import hmac
 import json
-import random
 import time
 from collections.abc import Callable, Iterator
 from contextlib import asynccontextmanager
@@ -144,17 +143,13 @@ def retry_job(job_id: int, conn: psycopg.Connection = Depends(get_conn)) -> dict
     return {"retried": True}
 
 
-DEMO_COMPANIES = 80
-
-
 @app.post("/demo/run", dependencies=[Depends(require_admin)])
 def demo_run(conn: psycopg.Connection = Depends(get_conn)) -> dict:
     """Feed a fresh batch of synthetic leads through the real ingest path."""
-    from bench.generate import generate
+    from bench.generate import demo_leads
 
-    seed = random.randrange(10**9)  # new seed each click, so keys never collide with old runs
     accepted = 0
-    for lead in generate(seed, DEMO_COMPANIES):
+    for lead in demo_leads(uuid4().hex[:8]):  # fresh keys, same texts the cache covers
         payload = {k: v for k, v in lead.items() if not k.startswith("_")}  # drop ground truth
         accepted += store_lead(conn, "demo", lead["_key"], payload) is not None
     return {"accepted": accepted}

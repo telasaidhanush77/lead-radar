@@ -133,3 +133,21 @@ def test_complete_returns_free_text():
         httpx.Response(200, json=groq_reply("BRIEF:\nx\nEMAIL:\ny")), seen=seen))
     assert c.complete("write a brief") == "BRIEF:\nx\nEMAIL:\ny"
     assert "response_format" not in json.loads(seen[0].content)
+
+
+def test_gemini_counts_thinking_tokens_as_output():
+    reply = gemini_reply(json.dumps(GOOD))
+    reply["usageMetadata"]["thoughtsTokenCount"] = 15
+    c = GeminiClassifier("key", "m", client_returning(httpx.Response(200, json=reply)))
+    c.classify(TEXT)
+    assert c.usage == {"in": 300, "out": 35}
+
+
+def test_non_idempotent_post_retries_429_but_not_503():
+    sleeps = []
+    ok = client_returning(httpx.Response(429), httpx.Response(200, json={"id": "1"}))
+    assert post_json_with_retry(ok, "https://x/y", json={}, headers={}, sleep=sleeps.append,
+                                idempotent=False) == {"id": "1"}
+    with pytest.raises(LLMError, match="503"):
+        post_json_with_retry(client_returning(httpx.Response(503)), "https://x/y", json={},
+                             headers={}, sleep=sleeps.append, idempotent=False)
