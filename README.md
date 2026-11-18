@@ -21,7 +21,7 @@ synthetic.
 ## Results
 
 <!-- results:start -->
-Measured 2026-11-18 at commit `3939d05`. Fuzzy threshold **92** (tuned on seed 1); numbers below are held-out seed 2.
+Measured 2026-11-18 at commit `d224f36`. Fuzzy threshold **92** (tuned on seed 1); numbers below are held-out seed 2.
 
 | Pipeline | |
 |---|---|
@@ -34,8 +34,8 @@ Measured 2026-11-18 at commit `3939d05`. Fuzzy threshold **92** (tuned on seed 1
 | Classifier (60 hand-labelled) | Industry acc. | Signal F1 | p50 latency | Fallbacks | Cost / 1k leads* |
 |---|---|---|---|---|---|
 | rules | 42% | 0.37 | 0 ms | 0 | $0.000 |
-| gemini (`gemini-3.8-flash`) | 53% | 0.68 | 6856 ms | 45 | $2.088 |
-| groq (`openai/gpt-oss-120b`) | 93% | 0.87 | 713 ms | 0 | $0.133 |
+| gemini (`gemini-3.5-flash-lite`) | 92% | 0.83 | 1012 ms | 0 | $0.108 |
+| groq (`openai/gpt-oss-120b`) | 93% | 0.87 | 761 ms | 0 | $0.131 |
 
 Leakage check: rules score 76% on generated descriptions vs the hand-labelled figure above, so only the hand-labelled number is reported.
 
@@ -116,6 +116,13 @@ Tier **A ≥ 70** → AE alert (once per company, ever) · **B ≥ 40** → BDR 
 - **LLMs as an option, not a dependency.** One `Classifier` interface: keyword rules (default,
   offline), Gemini, Groq. Replies are strictly validated against a closed label set. Any
   429/5xx/bad JSON falls back to rules and is counted. Results are cached by content hash.
+- **A research agent, kept on a short leash.** `POST /companies/{id}/brief` runs a bounded
+  tool-calling loop (Groq): `fetch_page` reads the company's *own* site (homepage, careers,
+  case studies), then `finish` writes an account brief and first email that cite those pages.
+  Guardrails: domain allow-list and public-IP check on every redirect hop (no SSRF), size and
+  time caps, page text treated as untrusted, at most 6 turns with the last one forced to
+  `finish`, and a stop after 3 failed fetches. Every step is stored (`agent_steps`) and
+  returned, and the result is a **draft a human approves**. Nothing is ever sent.
 - **No ORM, no frontend framework.** Hand-written SQL; one server-rendered, escaped HTML page.
 
 ## Limitations
@@ -123,6 +130,8 @@ Tier **A ≥ 70** → AE alert (once per company, ever) · **B ≥ 40** → BDR 
 - Fuzzy matching scans companies in the same country (O(n) per lead); `pg_trgm` is the next
   step past ~50k companies. Dedupe runs under one advisory lock (simple and correct, but
   serialised).
+- The agent only reads the company's own website. Large corporate sites often block bots
+  (HTTP 403/429), in which case it falls back to the template brief. SMB sites usually work.
 - One-way CRM sync; HubSpot gets standard fields only (the score rides in `description`).
 - The AE alert is its own job, so a Slack outage only delays it. A crash between sending and
   committing can still repeat one alert; a delivery-id dedupe on the receiving side would fix it.

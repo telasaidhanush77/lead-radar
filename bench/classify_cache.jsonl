@@ -1,86 +1,86 @@
-{"provider": "gemini", "content_hash": "33baa1dd2c8f90445bd900a772efeefd607e0be923a95f0d02ccb253b48ee648", "result": {"industry": "automotive", "signals": ["automotive_supplier"]}, "latency_ms": 26779}
-{"provider": "gemini", "content_hash": "47e6f3cce19574b66ce40bf6cee05768fe06046835a25af744299f98c56e2b44", "result": {"industry": "automotive", "signals": ["automotive_supplier"]}, "latency_ms": 88456}
-{"provider": "gemini", "content_hash": "6dd5772c0c7257cec33f33d59bc981eb47b3e3a5217a5d879622f11e759e59ed", "result": {"industry": "automotive", "signals": ["automotive_supplier"]}, "latency_ms": 24192}
-{"provider": "gemini", "content_hash": "8257d06a2e116f8b645e8ff1650040cfb37758cc3ee302cad4b59992ce67be58", "result": {"industry": "automotive", "signals": []}, "latency_ms": 7599}
-{"provider": "gemini", "content_hash": "1870a7a20071bdc12a86808444b4d62629e51205b6891e2f1cbc69ab79050e0f", "result": {"industry": "automotive", "signals": ["automotive_supplier"]}, "latency_ms": 38711}
-{"provider": "gemini", "content_hash": "f29025394b3c9d2b9d966a13f3e18a78ce7626cae37862d44e719adb6ac494ec", "result": {"industry": "automotive", "signals": ["us_enterprise_customers"]}, "latency_ms": 8527}
-{"provider": "gemini", "content_hash": "110770185c36fc4c4f4e745f21ea9e0d070b4459b8e12919b257028c4714559d", "result": {"industry": "automotive", "signals": ["automotive_supplier"]}, "latency_ms": 8579}
-{"provider": "gemini", "content_hash": "f0423f89e2e364d30fcfba8bb278151882d19382f13793546131570de374bd73", "result": {"industry": "automotive", "signals": ["automotive_supplier", "hiring_security"]}, "latency_ms": 10379}
-{"provider": "gemini", "content_hash": "41953493ce4f4a519b828cc952e7fcb9818977f02007eb1d405a948b935f3149", "result": {"industry": "fintech", "signals": ["regulated_industry"]}, "latency_ms": 37465}
-{"provider": "gemini", "content_hash": "145c4da241f72366f5ff79ed0756b7e6640349f7dce7366ed239b92f3785502d", "result": {"industry": "fintech", "signals": ["regulated_industry"]}, "latency_ms": 4584}
-{"provider": "gemini", "content_hash": "6448d1c18c66d6ce9893b703c9fe145c778b08a4d81ccdb22582079a34d8ac5e", "result": {"industry": "fintech", "signals": ["regulated_industry"]}, "latency_ms": 51747}
-{"provider": "gemini", "content_hash": "defbba9fe65caa64ee4b567268a8a9f027f1e5e8d222b6e55027c5fbc54416e3", "result": {"industry": "fintech", "signals": ["hiring_security"]}, "latency_ms": 7357}
-{"provider": "gemini", "content_hash": "93f3afb021dc60921d7e9b0d3ea0356dd267392ed5763b891448e7a4a8907cd6", "result": {"industry": "fintech", "signals": ["regulated_industry"]}, "latency_ms": 3902}
-{"provider": "gemini", "content_hash": "04bda1c3dd4c68869c19d2a32fa73813caaf4f728cb2365d0682a6ef1a75f953", "result": {"industry": "fintech", "signals": ["regulated_industry", "us_enterprise_customers"]}, "latency_ms": 8697}
-{"provider": "gemini", "content_hash": "d1943ee6506d70568808e05860f11f065ebf492e6111b71ab07d2da6563d1a74", "result": {"industry": "healthtech", "signals": ["regulated_industry"]}, "latency_ms": 6720}
+{"provider": "gemini", "content_hash": "33baa1dd2c8f90445bd900a772efeefd607e0be923a95f0d02ccb253b48ee648", "result": {"industry": "automotive", "signals": ["automotive_supplier"]}, "latency_ms": 961}
+{"provider": "gemini", "content_hash": "47e6f3cce19574b66ce40bf6cee05768fe06046835a25af744299f98c56e2b44", "result": {"industry": "automotive", "signals": ["automotive_supplier"]}, "latency_ms": 756}
+{"provider": "gemini", "content_hash": "6dd5772c0c7257cec33f33d59bc981eb47b3e3a5217a5d879622f11e759e59ed", "result": {"industry": "automotive", "signals": ["automotive_supplier"]}, "latency_ms": 651}
+{"provider": "gemini", "content_hash": "8257d06a2e116f8b645e8ff1650040cfb37758cc3ee302cad4b59992ce67be58", "result": {"industry": "automotive", "signals": []}, "latency_ms": 873}
+{"provider": "gemini", "content_hash": "1870a7a20071bdc12a86808444b4d62629e51205b6891e2f1cbc69ab79050e0f", "result": {"industry": "automotive", "signals": ["automotive_supplier"]}, "latency_ms": 614}
+{"provider": "gemini", "content_hash": "f29025394b3c9d2b9d966a13f3e18a78ce7626cae37862d44e719adb6ac494ec", "result": {"industry": "automotive", "signals": ["automotive_supplier", "us_enterprise_customers"]}, "latency_ms": 747}
+{"provider": "gemini", "content_hash": "110770185c36fc4c4f4e745f21ea9e0d070b4459b8e12919b257028c4714559d", "result": {"industry": "automotive", "signals": ["automotive_supplier"]}, "latency_ms": 778}
+{"provider": "gemini", "content_hash": "f0423f89e2e364d30fcfba8bb278151882d19382f13793546131570de374bd73", "result": {"industry": "automotive", "signals": ["automotive_supplier", "hiring_security"]}, "latency_ms": 889}
+{"provider": "gemini", "content_hash": "41953493ce4f4a519b828cc952e7fcb9818977f02007eb1d405a948b935f3149", "result": {"industry": "fintech", "signals": ["regulated_industry"]}, "latency_ms": 1031}
+{"provider": "gemini", "content_hash": "145c4da241f72366f5ff79ed0756b7e6640349f7dce7366ed239b92f3785502d", "result": {"industry": "fintech", "signals": ["regulated_industry"]}, "latency_ms": 514}
+{"provider": "gemini", "content_hash": "6448d1c18c66d6ce9893b703c9fe145c778b08a4d81ccdb22582079a34d8ac5e", "result": {"industry": "fintech", "signals": ["regulated_industry"]}, "latency_ms": 613}
+{"provider": "gemini", "content_hash": "defbba9fe65caa64ee4b567268a8a9f027f1e5e8d222b6e55027c5fbc54416e3", "result": {"industry": "fintech", "signals": ["hiring_security", "regulated_industry"]}, "latency_ms": 738}
+{"provider": "gemini", "content_hash": "93f3afb021dc60921d7e9b0d3ea0356dd267392ed5763b891448e7a4a8907cd6", "result": {"industry": "fintech", "signals": ["regulated_industry"]}, "latency_ms": 641}
+{"provider": "gemini", "content_hash": "04bda1c3dd4c68869c19d2a32fa73813caaf4f728cb2365d0682a6ef1a75f953", "result": {"industry": "fintech", "signals": ["us_enterprise_customers"]}, "latency_ms": 668}
+{"provider": "gemini", "content_hash": "d1943ee6506d70568808e05860f11f065ebf492e6111b71ab07d2da6563d1a74", "result": {"industry": "healthtech", "signals": ["regulated_industry"]}, "latency_ms": 1266}
 {"provider": "gemini", "content_hash": "3003ecfd5b5a8e3e82821fcba08b5ddb7056aac121c4851074a084ced83dc48f", "result": {"industry": "ecommerce", "signals": []}, "latency_ms": null}
-{"provider": "groq", "content_hash": "33baa1dd2c8f90445bd900a772efeefd607e0be923a95f0d02ccb253b48ee648", "result": {"industry": "automotive", "signals": ["automotive_supplier"]}, "latency_ms": 512}
-{"provider": "groq", "content_hash": "47e6f3cce19574b66ce40bf6cee05768fe06046835a25af744299f98c56e2b44", "result": {"industry": "automotive", "signals": ["automotive_supplier"]}, "latency_ms": 575}
-{"provider": "groq", "content_hash": "6dd5772c0c7257cec33f33d59bc981eb47b3e3a5217a5d879622f11e759e59ed", "result": {"industry": "automotive", "signals": ["automotive_supplier"]}, "latency_ms": 810}
-{"provider": "groq", "content_hash": "8257d06a2e116f8b645e8ff1650040cfb37758cc3ee302cad4b59992ce67be58", "result": {"industry": "automotive", "signals": []}, "latency_ms": 778}
-{"provider": "groq", "content_hash": "1870a7a20071bdc12a86808444b4d62629e51205b6891e2f1cbc69ab79050e0f", "result": {"industry": "automotive", "signals": ["automotive_supplier"]}, "latency_ms": 512}
-{"provider": "groq", "content_hash": "f29025394b3c9d2b9d966a13f3e18a78ce7626cae37862d44e719adb6ac494ec", "result": {"industry": "automotive", "signals": ["us_enterprise_customers"]}, "latency_ms": 700}
-{"provider": "groq", "content_hash": "110770185c36fc4c4f4e745f21ea9e0d070b4459b8e12919b257028c4714559d", "result": {"industry": "automotive", "signals": ["automotive_supplier"]}, "latency_ms": 738}
-{"provider": "groq", "content_hash": "f0423f89e2e364d30fcfba8bb278151882d19382f13793546131570de374bd73", "result": {"industry": "automotive", "signals": ["automotive_supplier", "hiring_security"]}, "latency_ms": 847}
-{"provider": "groq", "content_hash": "41953493ce4f4a519b828cc952e7fcb9818977f02007eb1d405a948b935f3149", "result": {"industry": "fintech", "signals": ["regulated_industry"]}, "latency_ms": 563}
-{"provider": "groq", "content_hash": "145c4da241f72366f5ff79ed0756b7e6640349f7dce7366ed239b92f3785502d", "result": {"industry": "fintech", "signals": ["regulated_industry"]}, "latency_ms": 784}
-{"provider": "groq", "content_hash": "6448d1c18c66d6ce9893b703c9fe145c778b08a4d81ccdb22582079a34d8ac5e", "result": {"industry": "fintech", "signals": ["regulated_industry"]}, "latency_ms": 474}
-{"provider": "groq", "content_hash": "defbba9fe65caa64ee4b567268a8a9f027f1e5e8d222b6e55027c5fbc54416e3", "result": {"industry": "fintech", "signals": ["hiring_security", "regulated_industry"]}, "latency_ms": 773}
-{"provider": "groq", "content_hash": "93f3afb021dc60921d7e9b0d3ea0356dd267392ed5763b891448e7a4a8907cd6", "result": {"industry": "fintech", "signals": ["regulated_industry"]}, "latency_ms": 702}
-{"provider": "groq", "content_hash": "04bda1c3dd4c68869c19d2a32fa73813caaf4f728cb2365d0682a6ef1a75f953", "result": {"industry": "fintech", "signals": ["us_enterprise_customers"]}, "latency_ms": 768}
-{"provider": "groq", "content_hash": "67ef46d8315fa0effc5b780c220a401129b0ca3fe62a6a10ce109b64000e3a67", "result": {"industry": "fintech", "signals": ["regulated_industry"]}, "latency_ms": 642}
-{"provider": "groq", "content_hash": "7881e464c178cbc31e306fa5890f48099d515476fa0622c7c7d94297958e7d21", "result": {"industry": "fintech", "signals": ["regulated_industry"]}, "latency_ms": 700}
-{"provider": "groq", "content_hash": "d1943ee6506d70568808e05860f11f065ebf492e6111b71ab07d2da6563d1a74", "result": {"industry": "healthtech", "signals": ["regulated_industry"]}, "latency_ms": 776}
-{"provider": "groq", "content_hash": "3b6fc5ca6b91c6dc686f00f0c19e9b3ea48665912c12c86e3c72fa38300ac1b8", "result": {"industry": "healthtech", "signals": ["regulated_industry"]}, "latency_ms": 692}
-{"provider": "groq", "content_hash": "67b6b4a76de1ba0b246294f1b24ccabc7cea4af36a1cb703b54937e6801c2729", "result": {"industry": "healthtech", "signals": ["regulated_industry"]}, "latency_ms": 665}
-{"provider": "groq", "content_hash": "19dc46041c9a500310e935e24d2b131a2a4f2b72c58d7aea7b40fccea3b633a0", "result": {"industry": "saas", "signals": []}, "latency_ms": 619}
-{"provider": "groq", "content_hash": "fa3dbfe2dd5dbc7f8a3637b21b9677226c79a172421481428b0df11a4e600a1c", "result": {"industry": "healthtech", "signals": ["regulated_industry"]}, "latency_ms": 698}
-{"provider": "groq", "content_hash": "a60fc2fba7a49cbafd2fc329867baa4670cd92cf79c122e911926c64b5c84ed6", "result": {"industry": "healthtech", "signals": ["regulated_industry", "us_enterprise_customers"]}, "latency_ms": 880}
-{"provider": "groq", "content_hash": "a6a920aaed7db66d9c239ceee08493e7f6fef042fde383e3bcc24a08918745c7", "result": {"industry": "healthtech", "signals": ["hiring_security", "regulated_industry"]}, "latency_ms": 812}
-{"provider": "groq", "content_hash": "ca357725ba20886bea7efbbc081926bbd6a95cbeb2efd121e4a39c38d6afdc6e", "result": {"industry": "saas", "signals": []}, "latency_ms": 663}
-{"provider": "groq", "content_hash": "f27bffba9a3e11ed77a1d2454d02d2de6e7e8eca0df6e8db4dec97c292ff6f5c", "result": {"industry": "saas", "signals": []}, "latency_ms": 788}
-{"provider": "groq", "content_hash": "7b8b0f3fc67f75e04be00fdefdfb55ae921fa56cca86c8a7f10f95e190848467", "result": {"industry": "saas", "signals": []}, "latency_ms": 649}
-{"provider": "groq", "content_hash": "88098af1702bc2e3e1b1ec6cabfdfd388ac999a059c2a3f0c44b7297e1866ebe", "result": {"industry": "saas", "signals": ["hiring_security"]}, "latency_ms": 1017}
-{"provider": "groq", "content_hash": "6bba13a4f9f5758c9a8ab4bb5fa41420a89ed9ae23d6e31429e51dbd6b8d2e72", "result": {"industry": "saas", "signals": ["us_enterprise_customers"]}, "latency_ms": 810}
-{"provider": "groq", "content_hash": "ab44befe6c39ebecc528f64326efacae69f497b112ea483d9edc83c0c7654fe8", "result": {"industry": "saas", "signals": []}, "latency_ms": 717}
-{"provider": "groq", "content_hash": "166453fda4499559b41252b30128f35efb57feb54c46b5982f5ec143cd822cc5", "result": {"industry": "saas", "signals": []}, "latency_ms": 754}
-{"provider": "groq", "content_hash": "3f3bd2f0499b41945aa9ae19476b6e3a521c7c9a1714bfab7836b637aef1b9d8", "result": {"industry": "saas", "signals": []}, "latency_ms": 701}
-{"provider": "groq", "content_hash": "c5169d6723536fabe553f8f7b3efee8c2674824b1d06b228291c8a6603e1fac3", "result": {"industry": "manufacturing", "signals": []}, "latency_ms": 817}
-{"provider": "groq", "content_hash": "c040c293602f6d7ebbd2b875ae8f6998fa6ab6030167cb6b2899b91406f50bbe", "result": {"industry": "manufacturing", "signals": ["hiring_security"]}, "latency_ms": 737}
-{"provider": "groq", "content_hash": "dc0a8434e869658f74f5a66c99b4a8efcd387c3fb21ef9068003e518408915e7", "result": {"industry": "manufacturing", "signals": ["us_enterprise_customers"]}, "latency_ms": 708}
-{"provider": "groq", "content_hash": "0d00d0919c9737c9c98e99d4c36eb709ac1f7056485832c97fe2d673e1ff237b", "result": {"industry": "manufacturing", "signals": []}, "latency_ms": 684}
-{"provider": "groq", "content_hash": "866bf696c016c3e2b5f29be167f2eae60f565c30fe78aec71b8fef5257101761", "result": {"industry": "manufacturing", "signals": []}, "latency_ms": 759}
-{"provider": "groq", "content_hash": "c7fe487cfbdc4c1a9c3908247aa981b61318e06425eff97535eaf175517e364f", "result": {"industry": "manufacturing", "signals": ["regulated_industry"]}, "latency_ms": 760}
-{"provider": "groq", "content_hash": "7cd337793d123f37d98d46c69ddd42cbffc6a62b5474ab12a1a13e6610dc2e03", "result": {"industry": "ecommerce", "signals": []}, "latency_ms": 387}
-{"provider": "groq", "content_hash": "b1522f08363b8b98fef8c7dd8e026af5a27be4dc5890819872b174f2cff293fb", "result": {"industry": "ecommerce", "signals": []}, "latency_ms": 636}
-{"provider": "groq", "content_hash": "dddfaab40d140962de4dda81710beb5c8cf4424e09b08fb036b17cac053fb225", "result": {"industry": "ecommerce", "signals": ["hiring_security"]}, "latency_ms": 739}
-{"provider": "groq", "content_hash": "82e3cf58acccc37b18687c2640a194cd92eaf95a25273033b9723141c3fc6f7c", "result": {"industry": "ecommerce", "signals": []}, "latency_ms": 574}
-{"provider": "groq", "content_hash": "9c35d3ad3d2c7fa6d7a32d22f4a34feb98f87607d461f14138f735c71e71c1a6", "result": {"industry": "ecommerce", "signals": []}, "latency_ms": 582}
-{"provider": "groq", "content_hash": "6db6ecd8df00fbfdc168a7ceb4272dbf318cea80bede8ec3de166564d1fe1cd5", "result": {"industry": "logistics", "signals": []}, "latency_ms": 489}
-{"provider": "groq", "content_hash": "a88304fceb44a852ccea5cf9a11ec3f252f033d9a5f2257bc3e624ed0f7e2767", "result": {"industry": "logistics", "signals": []}, "latency_ms": 499}
-{"provider": "groq", "content_hash": "b0b1e28591851808a13a2655939f6a979c9f5559353616773c934b1a286d3ef6", "result": {"industry": "logistics", "signals": ["us_enterprise_customers"]}, "latency_ms": 806}
-{"provider": "groq", "content_hash": "6f117119e5c5a3a30b608d3c58ee9af55b65121ef0e0c56b1f9e8f7ee153ea96", "result": {"industry": "logistics", "signals": ["regulated_industry"]}, "latency_ms": 1061}
-{"provider": "groq", "content_hash": "2beddf2af5edd53fafdee24a49edf1caaefa7c0df1af65bee5d70e72c89ec1a9", "result": {"industry": "logistics", "signals": []}, "latency_ms": 688}
-{"provider": "groq", "content_hash": "04e01f513d1c28d35d44129ab02d84c67fb08731bb140e8c31a5e35ceb384b99", "result": {"industry": "logistics", "signals": ["hiring_security"]}, "latency_ms": 633}
-{"provider": "groq", "content_hash": "422d65ac083c845cda7e013827c68ea97b67c4425c7cb631027f29ce69aebc28", "result": {"industry": "other", "signals": []}, "latency_ms": 700}
-{"provider": "groq", "content_hash": "ae97e20963618e9c28fcf6ef348fb8c857ed5cbdc48f9a0d89708b49ad3b2474", "result": {"industry": "other", "signals": []}, "latency_ms": 511}
-{"provider": "groq", "content_hash": "0220f89c219f51afecc768759bd2e212732b466e69a5af6fd9a9e30dd98299d4", "result": {"industry": "other", "signals": []}, "latency_ms": 730}
-{"provider": "groq", "content_hash": "6b062116bad298331c632673fb4f616e50212709cd5be5ca0571c32223f92d41", "result": {"industry": "other", "signals": []}, "latency_ms": 732}
-{"provider": "groq", "content_hash": "ecec5614ceb820dba67397a801def4e0159189365e8f36102b575d895a96cc8c", "result": {"industry": "other", "signals": ["regulated_industry"]}, "latency_ms": 1083}
-{"provider": "groq", "content_hash": "7800127a2c87f4481bf371b7774ee356e314fdce8c0655394c7b37094b74f6df", "result": {"industry": "fintech", "signals": []}, "latency_ms": 623}
-{"provider": "groq", "content_hash": "0974dc560c9afa6eeed66420450cd7fda75e5fe103e9fea8b6c5911e273b6b69", "result": {"industry": "other", "signals": []}, "latency_ms": 732}
-{"provider": "groq", "content_hash": "b0e216ccf66629cfdb02d289b7f07b3ef903b996d17577feb9a74155ec8fcebb", "result": {"industry": "other", "signals": []}, "latency_ms": 925}
-{"provider": "groq", "content_hash": "07318eb629fdbae76873fc98ea499da7f1a93218319c2568bd85e898c71728a6", "result": {"industry": "automotive", "signals": []}, "latency_ms": 819}
-{"provider": "groq", "content_hash": "68c9ee7b1538d0a6e05c771cdaa4a54b85135561a3d61b1360d2287117962de5", "result": {"industry": "healthtech", "signals": ["regulated_industry"]}, "latency_ms": 687}
-{"provider": "groq", "content_hash": "2a4eb0118c420d103ca941d17512b647285eae8cff9933323f27c3e47625b880", "result": {"industry": "fintech", "signals": ["regulated_industry"]}, "latency_ms": 828}
-{"provider": "groq", "content_hash": "8c18d07e625f45942fb4bb5285a1bedcdeded2039792a90b709b7a16b649f51d", "result": {"industry": "logistics", "signals": []}, "latency_ms": 798}
+{"provider": "groq", "content_hash": "33baa1dd2c8f90445bd900a772efeefd607e0be923a95f0d02ccb253b48ee648", "result": {"industry": "automotive", "signals": ["automotive_supplier"]}, "latency_ms": 811}
+{"provider": "groq", "content_hash": "47e6f3cce19574b66ce40bf6cee05768fe06046835a25af744299f98c56e2b44", "result": {"industry": "automotive", "signals": ["automotive_supplier"]}, "latency_ms": 672}
+{"provider": "groq", "content_hash": "6dd5772c0c7257cec33f33d59bc981eb47b3e3a5217a5d879622f11e759e59ed", "result": {"industry": "automotive", "signals": ["automotive_supplier"]}, "latency_ms": 542}
+{"provider": "groq", "content_hash": "8257d06a2e116f8b645e8ff1650040cfb37758cc3ee302cad4b59992ce67be58", "result": {"industry": "automotive", "signals": []}, "latency_ms": 803}
+{"provider": "groq", "content_hash": "1870a7a20071bdc12a86808444b4d62629e51205b6891e2f1cbc69ab79050e0f", "result": {"industry": "automotive", "signals": ["automotive_supplier"]}, "latency_ms": 786}
+{"provider": "groq", "content_hash": "f29025394b3c9d2b9d966a13f3e18a78ce7626cae37862d44e719adb6ac494ec", "result": {"industry": "automotive", "signals": ["us_enterprise_customers"]}, "latency_ms": 904}
+{"provider": "groq", "content_hash": "110770185c36fc4c4f4e745f21ea9e0d070b4459b8e12919b257028c4714559d", "result": {"industry": "automotive", "signals": ["automotive_supplier"]}, "latency_ms": 682}
+{"provider": "groq", "content_hash": "f0423f89e2e364d30fcfba8bb278151882d19382f13793546131570de374bd73", "result": {"industry": "automotive", "signals": ["automotive_supplier", "hiring_security"]}, "latency_ms": 834}
+{"provider": "groq", "content_hash": "41953493ce4f4a519b828cc952e7fcb9818977f02007eb1d405a948b935f3149", "result": {"industry": "fintech", "signals": ["regulated_industry"]}, "latency_ms": 845}
+{"provider": "groq", "content_hash": "145c4da241f72366f5ff79ed0756b7e6640349f7dce7366ed239b92f3785502d", "result": {"industry": "fintech", "signals": ["regulated_industry"]}, "latency_ms": 600}
+{"provider": "groq", "content_hash": "6448d1c18c66d6ce9893b703c9fe145c778b08a4d81ccdb22582079a34d8ac5e", "result": {"industry": "fintech", "signals": ["regulated_industry"]}, "latency_ms": 719}
+{"provider": "groq", "content_hash": "defbba9fe65caa64ee4b567268a8a9f027f1e5e8d222b6e55027c5fbc54416e3", "result": {"industry": "fintech", "signals": ["hiring_security", "regulated_industry"]}, "latency_ms": 760}
+{"provider": "groq", "content_hash": "93f3afb021dc60921d7e9b0d3ea0356dd267392ed5763b891448e7a4a8907cd6", "result": {"industry": "fintech", "signals": ["regulated_industry"]}, "latency_ms": 797}
+{"provider": "groq", "content_hash": "04bda1c3dd4c68869c19d2a32fa73813caaf4f728cb2365d0682a6ef1a75f953", "result": {"industry": "fintech", "signals": ["us_enterprise_customers"]}, "latency_ms": 980}
+{"provider": "groq", "content_hash": "67ef46d8315fa0effc5b780c220a401129b0ca3fe62a6a10ce109b64000e3a67", "result": {"industry": "fintech", "signals": ["regulated_industry"]}, "latency_ms": 533}
+{"provider": "groq", "content_hash": "7881e464c178cbc31e306fa5890f48099d515476fa0622c7c7d94297958e7d21", "result": {"industry": "fintech", "signals": ["regulated_industry"]}, "latency_ms": 731}
+{"provider": "groq", "content_hash": "d1943ee6506d70568808e05860f11f065ebf492e6111b71ab07d2da6563d1a74", "result": {"industry": "healthtech", "signals": ["regulated_industry"]}, "latency_ms": 773}
+{"provider": "groq", "content_hash": "3b6fc5ca6b91c6dc686f00f0c19e9b3ea48665912c12c86e3c72fa38300ac1b8", "result": {"industry": "healthtech", "signals": ["regulated_industry"]}, "latency_ms": 1275}
+{"provider": "groq", "content_hash": "67b6b4a76de1ba0b246294f1b24ccabc7cea4af36a1cb703b54937e6801c2729", "result": {"industry": "healthtech", "signals": ["regulated_industry"]}, "latency_ms": 726}
+{"provider": "groq", "content_hash": "19dc46041c9a500310e935e24d2b131a2a4f2b72c58d7aea7b40fccea3b633a0", "result": {"industry": "saas", "signals": []}, "latency_ms": 732}
+{"provider": "groq", "content_hash": "fa3dbfe2dd5dbc7f8a3637b21b9677226c79a172421481428b0df11a4e600a1c", "result": {"industry": "healthtech", "signals": ["regulated_industry"]}, "latency_ms": 766}
+{"provider": "groq", "content_hash": "a60fc2fba7a49cbafd2fc329867baa4670cd92cf79c122e911926c64b5c84ed6", "result": {"industry": "healthtech", "signals": ["regulated_industry", "us_enterprise_customers"]}, "latency_ms": 794}
+{"provider": "groq", "content_hash": "a6a920aaed7db66d9c239ceee08493e7f6fef042fde383e3bcc24a08918745c7", "result": {"industry": "healthtech", "signals": ["hiring_security", "regulated_industry"]}, "latency_ms": 670}
+{"provider": "groq", "content_hash": "ca357725ba20886bea7efbbc081926bbd6a95cbeb2efd121e4a39c38d6afdc6e", "result": {"industry": "saas", "signals": []}, "latency_ms": 733}
+{"provider": "groq", "content_hash": "f27bffba9a3e11ed77a1d2454d02d2de6e7e8eca0df6e8db4dec97c292ff6f5c", "result": {"industry": "saas", "signals": []}, "latency_ms": 826}
+{"provider": "groq", "content_hash": "7b8b0f3fc67f75e04be00fdefdfb55ae921fa56cca86c8a7f10f95e190848467", "result": {"industry": "saas", "signals": []}, "latency_ms": 669}
+{"provider": "groq", "content_hash": "88098af1702bc2e3e1b1ec6cabfdfd388ac999a059c2a3f0c44b7297e1866ebe", "result": {"industry": "saas", "signals": ["hiring_security"]}, "latency_ms": 761}
+{"provider": "groq", "content_hash": "6bba13a4f9f5758c9a8ab4bb5fa41420a89ed9ae23d6e31429e51dbd6b8d2e72", "result": {"industry": "saas", "signals": ["us_enterprise_customers"]}, "latency_ms": 808}
+{"provider": "groq", "content_hash": "ab44befe6c39ebecc528f64326efacae69f497b112ea483d9edc83c0c7654fe8", "result": {"industry": "saas", "signals": []}, "latency_ms": 783}
+{"provider": "groq", "content_hash": "166453fda4499559b41252b30128f35efb57feb54c46b5982f5ec143cd822cc5", "result": {"industry": "saas", "signals": []}, "latency_ms": 462}
+{"provider": "groq", "content_hash": "3f3bd2f0499b41945aa9ae19476b6e3a521c7c9a1714bfab7836b637aef1b9d8", "result": {"industry": "saas", "signals": []}, "latency_ms": 793}
+{"provider": "groq", "content_hash": "c5169d6723536fabe553f8f7b3efee8c2674824b1d06b228291c8a6603e1fac3", "result": {"industry": "manufacturing", "signals": []}, "latency_ms": 634}
+{"provider": "groq", "content_hash": "c040c293602f6d7ebbd2b875ae8f6998fa6ab6030167cb6b2899b91406f50bbe", "result": {"industry": "manufacturing", "signals": ["hiring_security"]}, "latency_ms": 860}
+{"provider": "groq", "content_hash": "dc0a8434e869658f74f5a66c99b4a8efcd387c3fb21ef9068003e518408915e7", "result": {"industry": "manufacturing", "signals": ["us_enterprise_customers"]}, "latency_ms": 566}
+{"provider": "groq", "content_hash": "0d00d0919c9737c9c98e99d4c36eb709ac1f7056485832c97fe2d673e1ff237b", "result": {"industry": "manufacturing", "signals": []}, "latency_ms": 470}
+{"provider": "groq", "content_hash": "866bf696c016c3e2b5f29be167f2eae60f565c30fe78aec71b8fef5257101761", "result": {"industry": "manufacturing", "signals": []}, "latency_ms": 925}
+{"provider": "groq", "content_hash": "c7fe487cfbdc4c1a9c3908247aa981b61318e06425eff97535eaf175517e364f", "result": {"industry": "manufacturing", "signals": ["regulated_industry"]}, "latency_ms": 865}
+{"provider": "groq", "content_hash": "7cd337793d123f37d98d46c69ddd42cbffc6a62b5474ab12a1a13e6610dc2e03", "result": {"industry": "ecommerce", "signals": []}, "latency_ms": 635}
+{"provider": "groq", "content_hash": "b1522f08363b8b98fef8c7dd8e026af5a27be4dc5890819872b174f2cff293fb", "result": {"industry": "ecommerce", "signals": []}, "latency_ms": 789}
+{"provider": "groq", "content_hash": "dddfaab40d140962de4dda81710beb5c8cf4424e09b08fb036b17cac053fb225", "result": {"industry": "ecommerce", "signals": ["hiring_security"]}, "latency_ms": 1040}
+{"provider": "groq", "content_hash": "82e3cf58acccc37b18687c2640a194cd92eaf95a25273033b9723141c3fc6f7c", "result": {"industry": "ecommerce", "signals": []}, "latency_ms": 698}
+{"provider": "groq", "content_hash": "9c35d3ad3d2c7fa6d7a32d22f4a34feb98f87607d461f14138f735c71e71c1a6", "result": {"industry": "ecommerce", "signals": []}, "latency_ms": 411}
+{"provider": "groq", "content_hash": "6db6ecd8df00fbfdc168a7ceb4272dbf318cea80bede8ec3de166564d1fe1cd5", "result": {"industry": "logistics", "signals": []}, "latency_ms": 744}
+{"provider": "groq", "content_hash": "a88304fceb44a852ccea5cf9a11ec3f252f033d9a5f2257bc3e624ed0f7e2767", "result": {"industry": "logistics", "signals": []}, "latency_ms": 756}
+{"provider": "groq", "content_hash": "b0b1e28591851808a13a2655939f6a979c9f5559353616773c934b1a286d3ef6", "result": {"industry": "logistics", "signals": ["us_enterprise_customers"]}, "latency_ms": 607}
+{"provider": "groq", "content_hash": "6f117119e5c5a3a30b608d3c58ee9af55b65121ef0e0c56b1f9e8f7ee153ea96", "result": {"industry": "logistics", "signals": ["regulated_industry"]}, "latency_ms": 811}
+{"provider": "groq", "content_hash": "2beddf2af5edd53fafdee24a49edf1caaefa7c0df1af65bee5d70e72c89ec1a9", "result": {"industry": "logistics", "signals": []}, "latency_ms": 676}
+{"provider": "groq", "content_hash": "04e01f513d1c28d35d44129ab02d84c67fb08731bb140e8c31a5e35ceb384b99", "result": {"industry": "logistics", "signals": ["hiring_security"]}, "latency_ms": 884}
+{"provider": "groq", "content_hash": "422d65ac083c845cda7e013827c68ea97b67c4425c7cb631027f29ce69aebc28", "result": {"industry": "other", "signals": []}, "latency_ms": 589}
+{"provider": "groq", "content_hash": "ae97e20963618e9c28fcf6ef348fb8c857ed5cbdc48f9a0d89708b49ad3b2474", "result": {"industry": "other", "signals": []}, "latency_ms": 479}
+{"provider": "groq", "content_hash": "0220f89c219f51afecc768759bd2e212732b466e69a5af6fd9a9e30dd98299d4", "result": {"industry": "other", "signals": []}, "latency_ms": 661}
+{"provider": "groq", "content_hash": "6b062116bad298331c632673fb4f616e50212709cd5be5ca0571c32223f92d41", "result": {"industry": "other", "signals": []}, "latency_ms": 656}
+{"provider": "groq", "content_hash": "ecec5614ceb820dba67397a801def4e0159189365e8f36102b575d895a96cc8c", "result": {"industry": "other", "signals": ["regulated_industry"]}, "latency_ms": 832}
+{"provider": "groq", "content_hash": "7800127a2c87f4481bf371b7774ee356e314fdce8c0655394c7b37094b74f6df", "result": {"industry": "fintech", "signals": []}, "latency_ms": 12542}
+{"provider": "groq", "content_hash": "0974dc560c9afa6eeed66420450cd7fda75e5fe103e9fea8b6c5911e273b6b69", "result": {"industry": "other", "signals": []}, "latency_ms": 810}
+{"provider": "groq", "content_hash": "b0e216ccf66629cfdb02d289b7f07b3ef903b996d17577feb9a74155ec8fcebb", "result": {"industry": "other", "signals": []}, "latency_ms": 983}
+{"provider": "groq", "content_hash": "07318eb629fdbae76873fc98ea499da7f1a93218319c2568bd85e898c71728a6", "result": {"industry": "automotive", "signals": []}, "latency_ms": 1005}
+{"provider": "groq", "content_hash": "68c9ee7b1538d0a6e05c771cdaa4a54b85135561a3d61b1360d2287117962de5", "result": {"industry": "healthtech", "signals": ["regulated_industry"]}, "latency_ms": 583}
+{"provider": "groq", "content_hash": "2a4eb0118c420d103ca941d17512b647285eae8cff9933323f27c3e47625b880", "result": {"industry": "fintech", "signals": ["regulated_industry"]}, "latency_ms": 1036}
+{"provider": "groq", "content_hash": "8c18d07e625f45942fb4bb5285a1bedcdeded2039792a90b709b7a16b649f51d", "result": {"industry": "logistics", "signals": []}, "latency_ms": 622}
 {"provider": "groq", "content_hash": "6fce249079ec18820fce2e8f0ead29571a5c8e0514a0565e4704ad1f0166f80b", "result": {"industry": "saas", "signals": ["regulated_industry", "us_enterprise_customers"]}, "latency_ms": null}
 {"provider": "groq", "content_hash": "070d300a4b97e4d7ad904fd24b3269f30c2bb7ba318dd988f45cc22189e4dbc1", "result": {"industry": "healthtech", "signals": ["regulated_industry"]}, "latency_ms": null}
 {"provider": "groq", "content_hash": "ddc8af41d34b3e70f3c3bcc65bcb03366fedc15fbe2d350cf732e94b6759ce22", "result": {"industry": "healthtech", "signals": ["regulated_industry"]}, "latency_ms": null}
 {"provider": "groq", "content_hash": "c65d3bf54fb7030d5b195779af2b646ce0f9435493881ede0119b53e698c878d", "result": {"industry": "healthtech", "signals": ["hiring_security", "regulated_industry"]}, "latency_ms": null}
 {"provider": "groq", "content_hash": "0325d1fac39bb08d95c460510e2b12c4f62cb006f9e3159ae16cc186d3b72ea8", "result": {"industry": "healthtech", "signals": ["regulated_industry", "us_enterprise_customers"]}, "latency_ms": null}
 {"provider": "groq", "content_hash": "85a2b2151a616d0fa2744f92313f648bc7ca312272b7f45a449ff0f4a207abd2", "result": {"industry": "saas", "signals": ["regulated_industry"]}, "latency_ms": null}
-{"provider": "groq", "content_hash": "d6e4583862d5280cbc459d368b57ec08f4b3783f55943401b14a79cd1ab4c561", "result": {"industry": "saas", "signals": ["us_enterprise_customers"]}, "latency_ms": null}
+{"provider": "groq", "content_hash": "d6e4583862d5280cbc459d368b57ec08f4b3783f55943401b14a79cd1ab4c561", "result": {"industry": "saas", "signals": []}, "latency_ms": null}
 {"provider": "groq", "content_hash": "bcaa895620db8582dbfe5e6bf8731cab77d38f843eb9c14298fbd505f86b7290", "result": {"industry": "saas", "signals": ["hiring_security", "us_enterprise_customers"]}, "latency_ms": null}
 {"provider": "groq", "content_hash": "4161da9c7d987303ab1ac4d71b098bfa8cc31b5b9a077f057730d1a8fb1cf440", "result": {"industry": "ecommerce", "signals": []}, "latency_ms": null}
 {"provider": "groq", "content_hash": "27b3a91ed34b02aa621df973dbb9458c03d7a46164c31b5a007cb8cccfdea50a", "result": {"industry": "logistics", "signals": ["hiring_security"]}, "latency_ms": null}
@@ -111,7 +111,7 @@
 {"provider": "groq", "content_hash": "a484902b2376fa2bb2f581f6faca3bf9a719e8576ab591b8dfe6102d71791410", "result": {"industry": "logistics", "signals": []}, "latency_ms": null}
 {"provider": "groq", "content_hash": "86ef8760bee32047d7cee39115ed0258085745a96fd0dee43eda5a84f39cabea", "result": {"industry": "other", "signals": []}, "latency_ms": null}
 {"provider": "groq", "content_hash": "38b89df7373f650486ebc9e01b0eba871631f4b821d8ba0275c42c07448361b2", "result": {"industry": "automotive", "signals": ["automotive_supplier"]}, "latency_ms": null}
-{"provider": "groq", "content_hash": "2627d146101607dc9d02f5a1646003951e75309ef2363af1ce37a31f5dd73ef8", "result": {"industry": "fintech", "signals": ["hiring_security", "regulated_industry", "us_enterprise_customers"]}, "latency_ms": null}
+{"provider": "groq", "content_hash": "2627d146101607dc9d02f5a1646003951e75309ef2363af1ce37a31f5dd73ef8", "result": {"industry": "fintech", "signals": ["regulated_industry", "us_enterprise_customers"]}, "latency_ms": null}
 {"provider": "groq", "content_hash": "df60bba2f3780c6f6f6e740e8903616395867eb88a821022d9c9ce42252292da", "result": {"industry": "healthtech", "signals": ["regulated_industry", "us_enterprise_customers"]}, "latency_ms": null}
 {"provider": "groq", "content_hash": "d04aaf5c4d1a28f2a7b74ee82d0ba752ef6fa77dd10d6a6c495e1f858cdea633", "result": {"industry": "healthtech", "signals": ["hiring_security", "regulated_industry"]}, "latency_ms": null}
 {"provider": "groq", "content_hash": "f505b052306a71e179e385d3339ba0ab57fa5ec2b64dca3feb79a1748c8d030c", "result": {"industry": "logistics", "signals": ["hiring_security", "us_enterprise_customers"]}, "latency_ms": null}
@@ -140,10 +140,55 @@
 {"provider": "groq", "content_hash": "ff7896b580d093919d2e54041f1bc88ba92025e90594453035922f938df9171d", "result": {"industry": "healthtech", "signals": ["regulated_industry", "us_enterprise_customers"]}, "latency_ms": null}
 {"provider": "groq", "content_hash": "1687706b3e8456e4010a19c64347b132c54af68e096355930a91f1860124854b", "result": {"industry": "automotive", "signals": ["automotive_supplier"]}, "latency_ms": null}
 {"provider": "groq", "content_hash": "b6f4cf185c126fa61a436223509e353c43a8971cb9613bba03897104a9ff9664", "result": {"industry": "automotive", "signals": ["automotive_supplier", "hiring_security"]}, "latency_ms": null}
-{"provider": "groq", "content_hash": "df8549958357245f965f3bc0325ee5db761d147ce389b6494b3c5ae8dc58bfc7", "result": {"industry": "saas", "signals": ["hiring_security", "regulated_industry"]}, "latency_ms": null}
+{"provider": "groq", "content_hash": "df8549958357245f965f3bc0325ee5db761d147ce389b6494b3c5ae8dc58bfc7", "result": {"industry": "fintech", "signals": ["hiring_security", "regulated_industry"]}, "latency_ms": null}
 {"provider": "groq", "content_hash": "a8380d8ad4fb1691b9a3b5c029d87e2f04ef5bb54352181ed8b36715c3b8589f", "result": {"industry": "automotive", "signals": ["automotive_supplier", "us_enterprise_customers"]}, "latency_ms": null}
 {"provider": "groq", "content_hash": "9548386e82831280b27b5bd32c0186bd8f86af24e7275cbe19796635d7450816", "result": {"industry": "fintech", "signals": ["regulated_industry"]}, "latency_ms": null}
 {"provider": "groq", "content_hash": "a2fd4260d744465add0d279c7173c49c1909f41a4b327738e2f24de14b1a31fb", "result": {"industry": "other", "signals": []}, "latency_ms": null}
 {"provider": "groq", "content_hash": "ed06bff71b62d13ef03884e57bc5ad01dc419a339ff63f2333b0d6a1754559bd", "result": {"industry": "ecommerce", "signals": []}, "latency_ms": null}
 {"provider": "groq", "content_hash": "83eb9da204f32791846433e5d72f360ac9bbe6462c0b39c91d4742250c633701", "result": {"industry": "fintech", "signals": ["hiring_security", "regulated_industry"]}, "latency_ms": null}
 {"provider": "groq", "content_hash": "f0ffc513139dac0dc4546d0898dc6e154b47991029332619a6bd73fbdb2111a9", "result": {"industry": "fintech", "signals": ["regulated_industry", "us_enterprise_customers"]}, "latency_ms": null}
+{"provider": "gemini", "content_hash": "67ef46d8315fa0effc5b780c220a401129b0ca3fe62a6a10ce109b64000e3a67", "result": {"industry": "fintech", "signals": ["regulated_industry"]}, "latency_ms": 1278}
+{"provider": "gemini", "content_hash": "7881e464c178cbc31e306fa5890f48099d515476fa0622c7c7d94297958e7d21", "result": {"industry": "fintech", "signals": ["regulated_industry"]}, "latency_ms": 1012}
+{"provider": "gemini", "content_hash": "3b6fc5ca6b91c6dc686f00f0c19e9b3ea48665912c12c86e3c72fa38300ac1b8", "result": {"industry": "healthtech", "signals": ["regulated_industry"]}, "latency_ms": 1013}
+{"provider": "gemini", "content_hash": "67b6b4a76de1ba0b246294f1b24ccabc7cea4af36a1cb703b54937e6801c2729", "result": {"industry": "healthtech", "signals": ["regulated_industry"]}, "latency_ms": 1415}
+{"provider": "gemini", "content_hash": "19dc46041c9a500310e935e24d2b131a2a4f2b72c58d7aea7b40fccea3b633a0", "result": {"industry": "healthtech", "signals": ["regulated_industry"]}, "latency_ms": 1130}
+{"provider": "gemini", "content_hash": "fa3dbfe2dd5dbc7f8a3637b21b9677226c79a172421481428b0df11a4e600a1c", "result": {"industry": "healthtech", "signals": ["regulated_industry"]}, "latency_ms": 615}
+{"provider": "gemini", "content_hash": "a60fc2fba7a49cbafd2fc329867baa4670cd92cf79c122e911926c64b5c84ed6", "result": {"industry": "healthtech", "signals": ["regulated_industry", "us_enterprise_customers"]}, "latency_ms": 611}
+{"provider": "gemini", "content_hash": "a6a920aaed7db66d9c239ceee08493e7f6fef042fde383e3bcc24a08918745c7", "result": {"industry": "healthtech", "signals": ["hiring_security", "regulated_industry"]}, "latency_ms": 1931}
+{"provider": "gemini", "content_hash": "ca357725ba20886bea7efbbc081926bbd6a95cbeb2efd121e4a39c38d6afdc6e", "result": {"industry": "saas", "signals": []}, "latency_ms": 1680}
+{"provider": "gemini", "content_hash": "f27bffba9a3e11ed77a1d2454d02d2de6e7e8eca0df6e8db4dec97c292ff6f5c", "result": {"industry": "saas", "signals": ["us_enterprise_customers"]}, "latency_ms": 1033}
+{"provider": "gemini", "content_hash": "7b8b0f3fc67f75e04be00fdefdfb55ae921fa56cca86c8a7f10f95e190848467", "result": {"industry": "saas", "signals": []}, "latency_ms": 1299}
+{"provider": "gemini", "content_hash": "88098af1702bc2e3e1b1ec6cabfdfd388ac999a059c2a3f0c44b7297e1866ebe", "result": {"industry": "saas", "signals": ["hiring_security"]}, "latency_ms": 613}
+{"provider": "gemini", "content_hash": "6bba13a4f9f5758c9a8ab4bb5fa41420a89ed9ae23d6e31429e51dbd6b8d2e72", "result": {"industry": "saas", "signals": ["us_enterprise_customers"]}, "latency_ms": 1015}
+{"provider": "gemini", "content_hash": "ab44befe6c39ebecc528f64326efacae69f497b112ea483d9edc83c0c7654fe8", "result": {"industry": "saas", "signals": []}, "latency_ms": 1017}
+{"provider": "gemini", "content_hash": "166453fda4499559b41252b30128f35efb57feb54c46b5982f5ec143cd822cc5", "result": {"industry": "saas", "signals": []}, "latency_ms": 742}
+{"provider": "gemini", "content_hash": "3f3bd2f0499b41945aa9ae19476b6e3a521c7c9a1714bfab7836b637aef1b9d8", "result": {"industry": "saas", "signals": []}, "latency_ms": 623}
+{"provider": "gemini", "content_hash": "c5169d6723536fabe553f8f7b3efee8c2674824b1d06b228291c8a6603e1fac3", "result": {"industry": "manufacturing", "signals": ["regulated_industry"]}, "latency_ms": 889}
+{"provider": "gemini", "content_hash": "c040c293602f6d7ebbd2b875ae8f6998fa6ab6030167cb6b2899b91406f50bbe", "result": {"industry": "manufacturing", "signals": ["hiring_security"]}, "latency_ms": 1156}
+{"provider": "gemini", "content_hash": "dc0a8434e869658f74f5a66c99b4a8efcd387c3fb21ef9068003e518408915e7", "result": {"industry": "manufacturing", "signals": ["regulated_industry", "us_enterprise_customers"]}, "latency_ms": 874}
+{"provider": "gemini", "content_hash": "0d00d0919c9737c9c98e99d4c36eb709ac1f7056485832c97fe2d673e1ff237b", "result": {"industry": "manufacturing", "signals": []}, "latency_ms": 901}
+{"provider": "gemini", "content_hash": "866bf696c016c3e2b5f29be167f2eae60f565c30fe78aec71b8fef5257101761", "result": {"industry": "manufacturing", "signals": ["regulated_industry"]}, "latency_ms": 1280}
+{"provider": "gemini", "content_hash": "c7fe487cfbdc4c1a9c3908247aa981b61318e06425eff97535eaf175517e364f", "result": {"industry": "manufacturing", "signals": ["regulated_industry"]}, "latency_ms": 5394}
+{"provider": "gemini", "content_hash": "7cd337793d123f37d98d46c69ddd42cbffc6a62b5474ab12a1a13e6610dc2e03", "result": {"industry": "ecommerce", "signals": []}, "latency_ms": 1961}
+{"provider": "gemini", "content_hash": "b1522f08363b8b98fef8c7dd8e026af5a27be4dc5890819872b174f2cff293fb", "result": {"industry": "ecommerce", "signals": []}, "latency_ms": 2066}
+{"provider": "gemini", "content_hash": "dddfaab40d140962de4dda81710beb5c8cf4424e09b08fb036b17cac053fb225", "result": {"industry": "ecommerce", "signals": ["hiring_security"]}, "latency_ms": 1257}
+{"provider": "gemini", "content_hash": "82e3cf58acccc37b18687c2640a194cd92eaf95a25273033b9723141c3fc6f7c", "result": {"industry": "ecommerce", "signals": []}, "latency_ms": 933}
+{"provider": "gemini", "content_hash": "9c35d3ad3d2c7fa6d7a32d22f4a34feb98f87607d461f14138f735c71e71c1a6", "result": {"industry": "ecommerce", "signals": []}, "latency_ms": 1001}
+{"provider": "gemini", "content_hash": "6db6ecd8df00fbfdc168a7ceb4272dbf318cea80bede8ec3de166564d1fe1cd5", "result": {"industry": "logistics", "signals": []}, "latency_ms": 1104}
+{"provider": "gemini", "content_hash": "a88304fceb44a852ccea5cf9a11ec3f252f033d9a5f2257bc3e624ed0f7e2767", "result": {"industry": "logistics", "signals": []}, "latency_ms": 631}
+{"provider": "gemini", "content_hash": "b0b1e28591851808a13a2655939f6a979c9f5559353616773c934b1a286d3ef6", "result": {"industry": "logistics", "signals": ["us_enterprise_customers"]}, "latency_ms": 750}
+{"provider": "gemini", "content_hash": "6f117119e5c5a3a30b608d3c58ee9af55b65121ef0e0c56b1f9e8f7ee153ea96", "result": {"industry": "logistics", "signals": ["regulated_industry"]}, "latency_ms": 1377}
+{"provider": "gemini", "content_hash": "2beddf2af5edd53fafdee24a49edf1caaefa7c0df1af65bee5d70e72c89ec1a9", "result": {"industry": "logistics", "signals": []}, "latency_ms": 1328}
+{"provider": "gemini", "content_hash": "04e01f513d1c28d35d44129ab02d84c67fb08731bb140e8c31a5e35ceb384b99", "result": {"industry": "logistics", "signals": ["hiring_security"]}, "latency_ms": 1012}
+{"provider": "gemini", "content_hash": "422d65ac083c845cda7e013827c68ea97b67c4425c7cb631027f29ce69aebc28", "result": {"industry": "other", "signals": []}, "latency_ms": 749}
+{"provider": "gemini", "content_hash": "ae97e20963618e9c28fcf6ef348fb8c857ed5cbdc48f9a0d89708b49ad3b2474", "result": {"industry": "other", "signals": []}, "latency_ms": 910}
+{"provider": "gemini", "content_hash": "0220f89c219f51afecc768759bd2e212732b466e69a5af6fd9a9e30dd98299d4", "result": {"industry": "other", "signals": []}, "latency_ms": 718}
+{"provider": "gemini", "content_hash": "6b062116bad298331c632673fb4f616e50212709cd5be5ca0571c32223f92d41", "result": {"industry": "other", "signals": []}, "latency_ms": 823}
+{"provider": "gemini", "content_hash": "ecec5614ceb820dba67397a801def4e0159189365e8f36102b575d895a96cc8c", "result": {"industry": "other", "signals": []}, "latency_ms": 1151}
+{"provider": "gemini", "content_hash": "7800127a2c87f4481bf371b7774ee356e314fdce8c0655394c7b37094b74f6df", "result": {"industry": "fintech", "signals": []}, "latency_ms": 1809}
+{"provider": "gemini", "content_hash": "0974dc560c9afa6eeed66420450cd7fda75e5fe103e9fea8b6c5911e273b6b69", "result": {"industry": "other", "signals": []}, "latency_ms": 1562}
+{"provider": "gemini", "content_hash": "b0e216ccf66629cfdb02d289b7f07b3ef903b996d17577feb9a74155ec8fcebb", "result": {"industry": "saas", "signals": []}, "latency_ms": 1920}
+{"provider": "gemini", "content_hash": "07318eb629fdbae76873fc98ea499da7f1a93218319c2568bd85e898c71728a6", "result": {"industry": "automotive", "signals": []}, "latency_ms": 1602}
+{"provider": "gemini", "content_hash": "68c9ee7b1538d0a6e05c771cdaa4a54b85135561a3d61b1360d2287117962de5", "result": {"industry": "healthtech", "signals": ["regulated_industry"]}, "latency_ms": 1885}
+{"provider": "gemini", "content_hash": "2a4eb0118c420d103ca941d17512b647285eae8cff9933323f27c3e47625b880", "result": {"industry": "other", "signals": ["regulated_industry"]}, "latency_ms": 1458}
+{"provider": "gemini", "content_hash": "8c18d07e625f45942fb4bb5285a1bedcdeded2039792a90b709b7a16b649f51d", "result": {"industry": "logistics", "signals": []}, "latency_ms": 1487}

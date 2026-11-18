@@ -1,6 +1,6 @@
 {
   "date": "2026-11-18",
-  "commit": "3939d05",
+  "commit": "d224f36",
   "threshold": 92,
   "tuning_f1": {
     "80": 0.967642526964561,
@@ -30,24 +30,24 @@
     "rules": {
       "industry_accuracy": 0.4166666666666667,
       "signal_f1": 0.37209302325581395,
-      "p50_latency_ms": 0.05465000867843628,
+      "p50_latency_ms": 0.11449999874457717,
       "fallbacks": 0,
       "cost_per_1k_usd": 0.0
     },
     "gemini": {
-      "industry_accuracy": 0.5333333333333333,
-      "signal_f1": 0.6792452830188679,
-      "p50_latency_ms": 6855.986150010722,
-      "fallbacks": 45,
-      "cost_per_1k_usd": 2.0884500000000004,
-      "model": "gemini-3.8-flash"
+      "industry_accuracy": 0.9166666666666666,
+      "signal_f1": 0.8333333333333334,
+      "p50_latency_ms": 1011.6698500060011,
+      "fallbacks": 0,
+      "cost_per_1k_usd": 0.10791666666666666,
+      "model": "gemini-3.5-flash-lite"
     },
     "groq": {
       "industry_accuracy": 0.9333333333333333,
       "signal_f1": 0.8656716417910447,
-      "p50_latency_ms": 712.5374499883037,
+      "p50_latency_ms": 760.7129999960307,
       "fallbacks": 0,
-      "cost_per_1k_usd": 0.13268000000000002,
+      "cost_per_1k_usd": 0.13118,
       "model": "openai/gpt-oss-120b"
     }
   },
@@ -75,7 +75,7 @@
     ],
     [
       "gemini industry accuracy (hand-labelled)",
-      "53%"
+      "92%"
     ],
     [
       "groq industry accuracy (hand-labelled)",
