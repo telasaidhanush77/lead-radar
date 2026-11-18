@@ -68,6 +68,27 @@ def _top_rows(conn: psycopg.Connection) -> str:
     return "".join(out)
 
 
+def _signal_rows(conn: psycopg.Connection) -> str:
+    from app.signals import signals_report
+
+    rows = signals_report(conn, limit=10)
+    if not rows:
+        return ('<li class="empty">No live signals yet. Real companies hiring for '
+                'ISO 27001 / TISAX / SOC 2 roles appear here after a signals run.</li>')
+    out = []
+    for r in rows:
+        url = r["example_url"] or ""
+        link = (f'<a href="{esc(url)}" rel="noopener nofollow" target="_blank">'
+                f'{esc(r["example_title"])}</a>' if url.startswith("https://")
+                else esc(r["example_title"]))
+        out.append(
+            f'<li class="signal"><div><div class="co">{esc(r["company"])}</div>'
+            f'<div class="meta">{esc(r["country"] or "—")} · {esc(r["postings"])} '
+            f'open role(s) · {link}</div></div>'
+            f'<span class="mono sig-score">{esc(r["score"])}</span></li>')
+    return "".join(out)
+
+
 def _dead_rows(conn: psycopg.Connection) -> str:
     rows = conn.execute("SELECT id, kind, attempts, left(last_error, 200) AS err FROM jobs "
                         "WHERE status = 'dead' ORDER BY id DESC LIMIT 20").fetchall()
@@ -101,6 +122,7 @@ def render_dashboard(conn: psycopg.Connection) -> str:
         tier_bar=tier_bar,
         tier_a=t["A"], tier_b=t["B"], tier_c=t["C"],
         top_rows=_top_rows(conn), dead_rows=_dead_rows(conn), bench=bench_html,
+        signal_rows=_signal_rows(conn),
     )
 
 
@@ -174,6 +196,10 @@ ul.deadlist {{ list-style: none; padding: 0; margin: 0; }}
         padding: 10px 0; border-top: 1px solid var(--line); }}
 .err {{ font-family: var(--mono); font-size: 12px; color: var(--a); word-break: break-word; }}
 .empty {{ color: var(--muted); font-size: 14px; }}
+.live {{ border-color: var(--a); }}
+.signal {{ display: flex; gap: 10px; justify-content: space-between; align-items: start;
+          padding: 10px 0; border-top: 1px solid var(--line); }}
+.signal a {{ color: var(--ink); }} .sig-score {{ color: var(--a); font-size: 18px; }}
 .bench {{ display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; margin: 0; font-size: 14px; }}
 .bench dt {{ color: var(--muted); }} .bench dd {{ margin: 0; text-align: right; }}
 code {{ font-family: var(--mono); font-size: 13px; }}
@@ -207,6 +233,8 @@ footer {{ margin-top: 32px; font-size: 13px; color: var(--muted); }}
   <section aria-labelledby="top-h"><h2 id="top-h">Tier A — alert the AE</h2>
     <div class="tablewrap"><table><tbody>{top_rows}</tbody></table></div></section>
   <div class="side">
+    <section aria-labelledby="sig-h" class="live"><h2 id="sig-h">Live hiring signals · real companies</h2>
+      <ul class="deadlist">{signal_rows}</ul></section>
     <section aria-labelledby="tier-h"><h2 id="tier-h">Tier mix</h2>
       <div class="tiers" role="img" aria-label="A {tier_a}, B {tier_b}, C {tier_c}">{tier_bar}</div>
       <div class="legend"><span class="lA">A → AE <b class="mono">{tier_a}</b></span>

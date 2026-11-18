@@ -18,6 +18,20 @@ synthetic.
                                                                        alert job
 ```
 
+## Live: real companies that need compliance right now
+
+The synthetic data proves the plumbing. This proves the point: `python -m app.signals` pulls
+**real job postings** from the [Adzuna job API](https://developer.adzuna.com/) for
+TISAX, ISO 27001, SOC 2 and ISMS roles across 10 European countries, drops recruiting
+agencies, and runs each posting through the same pipeline. A company advertising an
+"ISMS Manager (ISO 27001)" is building the programme a compliance-automation vendor sells,
+and it says so in public. Postings for the same company add up (a company hiring for TISAX
+*and* ISO 27001 keeps both signals). The table below is written by the script:
+
+<!-- signals:start -->
+_Run `python -m app.signals` with `ADZUNA_APP_ID` / `ADZUNA_APP_KEY` set._
+<!-- signals:end -->
+
 ## Results
 
 <!-- results:start -->

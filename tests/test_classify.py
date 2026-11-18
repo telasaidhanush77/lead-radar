@@ -98,3 +98,29 @@ def test_enrich_writes_and_enqueues_score(db):
     assert row == {"industry": "automotive", "signals": ["automotive_supplier"]}
     assert db.execute("SELECT kind, payload FROM jobs").fetchone() == {
         "kind": "score", "payload": {"company_id": 1}}
+
+
+def test_rules_tisax_means_automotive_supplier():
+    c = rules.classify("Currently hiring: Informationssicherheitsbeauftragter (TISAX).")
+    assert c.industry == "automotive" and "automotive_supplier" in c.signals
+    assert "hiring_security" in c.signals
+
+
+def test_rules_currently_hiring_isms_role():
+    c = rules.classify("Currently hiring: ISMS Manager ISO 27001.")
+    assert "hiring_security" in c.signals
+
+
+def test_enrich_uses_every_open_role_not_just_the_newest(db):
+    from psycopg.types.json import Jsonb
+
+    db.execute("INSERT INTO companies (description) "
+               "VALUES ('Currently hiring: ISO 27001 Auditor.')")
+    for i, title in enumerate(["ISMS Coordinator (TISAX)", "ISO 27001 Auditor"]):
+        db.execute("INSERT INTO contacts (company_id) VALUES (1)")
+        db.execute("INSERT INTO raw_leads (source, idempotency_key, payload, contact_id) "
+                   "VALUES ('adzuna', %s, %s, %s)",
+                   (f"k{i}", Jsonb({"signal": {"title": title}}), i + 1))
+    enrich(db, {"company_id": 1}, get_settings())
+    signals = db.execute("SELECT signals FROM companies").fetchone()["signals"]
+    assert "automotive_supplier" in signals and "hiring_security" in signals

@@ -62,3 +62,30 @@ def test_demo_run_stores_leads_without_ground_truth(client, db):
     assert r.status_code == 200 and r.json()["accepted"] > 50
     keys = db.execute("SELECT DISTINCT jsonb_object_keys(payload) AS k FROM raw_leads").fetchall()
     assert not any(row["k"].startswith("_") for row in keys)
+
+
+def seed_signal(db):
+    from psycopg.types.json import Jsonb
+
+    cid = seed_company(db, "Real Supplier GmbH", "B", 65)
+    db.execute("INSERT INTO contacts (company_id) VALUES (%s)", (cid,))
+    db.execute("INSERT INTO raw_leads (source, idempotency_key, payload, contact_id) VALUES "
+               "('adzuna', 'adzuna:DE:1', %s, 1)",
+               (Jsonb({"signal": {"title": "ISMS <Manager>", "url": "https://adzuna.de/1"}}),))
+
+
+def test_dashboard_shows_live_signals_panel(db):
+    seed_signal(db)
+    html = render_dashboard(db)
+    assert "Live hiring signals" in html and "Real Supplier GmbH" in html
+    assert "ISMS &lt;Manager&gt;" in html and 'href="https://adzuna.de/1"' in html
+
+
+def test_signals_panel_empty_state(db):
+    assert "No live signals yet" in render_dashboard(db)
+
+
+def test_signals_run_requires_token_and_keys(client):
+    assert client.post("/signals/run").status_code == 401
+    r = client.post("/signals/run", headers=ADMIN)
+    assert r.status_code == 503 and "ADZUNA" in r.json()["detail"]

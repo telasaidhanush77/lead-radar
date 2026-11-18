@@ -23,8 +23,8 @@ _CARMAKERS = r"bmw|volkswagen|\bvw\b|mercedes|daimler|audi|porsche|stellantis|re
 # First match wins, so specific industries come before broad ones (automotive before
 # manufacturing, everything before the catch-all 'saas' keywords like 'platform').
 _INDUSTRY_RULES = [
-    ("automotive", rf"automotive|\boems?\b|vehicle|fahrzeug|\bkfz\b|tier[- ]?[12]\b|zulieferer"
-                   rf"|car parts|auto parts|brake|chassis|{_CARMAKERS}"),
+    ("automotive", rf"tisax|automotive|\boems?\b|vehicle|fahrzeug|\bkfz\b|tier[- ]?[12]\b"
+                   rf"|zulieferer|car parts|auto parts|brake|chassis|{_CARMAKERS}"),
     ("fintech", r"fintech|payment|banking|\bbank|lending|neobank|bafin|insurtech|crypto"
                 r"|wealth management|zahlungs"),
     ("healthtech", r"health|hospital|krankenhaus|klinik|clinic|patient|medical|medtech|pharma"
@@ -36,13 +36,14 @@ _INDUSTRY_RULES = [
     ("saas", r"saas|software|platform|cloud|\bapi\b|plattform"),
 ]
 _SIGNAL_RULES = {
-    "automotive_supplier": rf"zulieferer|tier[- ]?[12]\b|\boems?\b|automotive supplier"
+    "automotive_supplier": rf"tisax|zulieferer|tier[- ]?[12]\b|\boems?\b|automotive supplier"
                            rf"|supplier (to|for|of) .*({_CARMAKERS}|car|automotive)"
                            rf"|supplies .*({_CARMAKERS})",
     "us_enterprise_customers": r"fortune 500|\b(us|u\.s\.|american|north american) "
                                r"(enterprise|customers|clients|market)|soc ?2|expanding to the us"
                                r"|customers in the (us|united states)",
-    "hiring_security": r"hiring .*(security|ciso|compliance|infosec)"
+    "hiring_security": r"hiring:? .*(security|sicherheit|ciso|compliance|infosec|isms|iso ?27001"
+                       r"|tisax|soc ?2|datenschutz|grc)"
                        r"|(security|compliance) (engineer|officer|manager|lead)s? .*(open|hiring)"
                        r"|looking for an? .*(security|compliance|ciso)",
     "regulated_industry": r"bafin|regulated|\bdora\b|nis ?2|hipaa|\bbank|insurance|versicherung"
@@ -140,12 +141,24 @@ def get_classifier(settings: Settings, conn: psycopg.Connection) -> Classifier:
     return CachedClassifier(make_llm_classifier(settings), conn)
 
 
+def company_text(conn: psycopg.Connection, company_id: int, description: str | None) -> str:
+    """Description plus every open role we've seen. Job signals add up: a company hiring
+    for TISAX and for ISO 27001 shows both, whichever posting arrived last."""
+    roles = [r["title"] for r in conn.execute(
+        "SELECT DISTINCT r.payload -> 'signal' ->> 'title' AS title FROM raw_leads r "
+        "JOIN contacts c ON c.id = r.contact_id WHERE c.company_id = %s "
+        "AND r.payload ? 'signal' ORDER BY 1", (company_id,))]
+    text = description or ""
+    return f"{text} Open roles: {'; '.join(roles)}." if roles else text
+
+
 def enrich(conn: psycopg.Connection, payload: dict, settings: Settings) -> None:
     """Job handler: classify the company's description, then queue scoring."""
     company_id = payload["company_id"]
     row = conn.execute("SELECT description FROM companies WHERE id = %s",
                        (company_id,)).fetchone()
-    result = get_classifier(settings, conn).classify(row["description"] or "")
+    result = get_classifier(settings, conn).classify(company_text(conn, company_id,
+                                                                  row["description"]))
     conn.execute("UPDATE companies SET industry = %s, signals = %s, updated_at = now() "
                  "WHERE id = %s",
                  (result.industry, Jsonb(sorted(result.signals)), company_id))

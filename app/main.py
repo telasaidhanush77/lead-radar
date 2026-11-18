@@ -6,6 +6,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from uuid import uuid4
 
+import httpx
 import psycopg
 from fastapi import Depends, FastAPI, Header, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse
@@ -178,3 +179,15 @@ def read_brief(brief_id: int, conn: psycopg.Connection = Depends(get_conn)) -> d
     if row is None:
         raise HTTPException(404, "no brief with that id")
     return row
+
+
+@app.post("/signals/run", dependencies=[Depends(require_admin)])
+def signals_run(conn: psycopg.Connection = Depends(get_conn)) -> dict:
+    """Pull live hiring signals now (~40 paced API calls, about 2 minutes)."""
+    from app.signals import run_signals
+
+    try:
+        with httpx.Client() as client:
+            return run_signals(conn, get_settings(), client)
+    except ValueError as exc:
+        raise HTTPException(503, str(exc)) from None

@@ -1,0 +1,191 @@
+"""Real buying signals: European companies hiring for compliance roles right now.
+
+A company advertising an "ISMS Manager (ISO 27001)" or a "TISAX coordinator" is building
+the exact programme a compliance-automation vendor sells, and it says so publicly. This
+module pulls those postings from the Adzuna job API (official, free key), drops recruiting
+agencies, and feeds each posting into the normal pipeline as a lead.
+
+    python -m app.signals            # pull, process, print the report
+"""
+
+import logging
+import re
+import time
+from collections.abc import Callable
+from dataclasses import dataclass
+
+import httpx
+import psycopg
+
+from app.agent import html_to_text
+from app.config import Settings
+from app.ingest import store_lead
+from app.normalize import fold
+
+log = logging.getLogger("signals")
+
+ADZUNA_URL = "https://api.adzuna.com/v1/api/jobs/{country}/search/{page}"
+# Adzuna country codes; DACH first, then the rest of Secfix's European market.
+COUNTRIES = ["de", "at", "ch", "nl", "be", "fr", "it", "es", "pl", "gb"]
+QUERIES = ["TISAX", "ISO 27001", "SOC 2", "ISMS"]
+DAYS = 30
+PER_PAGE = 50
+PACE_S = 2.5  # free tier is rate-limited per minute; be a polite client
+
+# Agencies post on behalf of unnamed clients: the company behind the role is unknown.
+AGENCY_NAMES = {"hays", "randstad", "adecco", "manpower", "michael page", "robert half",
+                "page personnel", "gulp", "experis", "allgeier", "brunel", "jobot",
+                "harvey nash", "computer futures", "amoria bond", "frank group"}
+AGENCY_WORDS = re.compile(r"personal(berat|dienst|vermittl|service)|recruit|staffing|"
+                          r"headhunt|zeitarbeit|arbeitnehmerueberlassung|talent")
+
+
+@dataclass(frozen=True)
+class Posting:
+    id: str
+    country: str
+    company: str
+    title: str
+    snippet: str
+    posted_at: str
+    url: str
+    query: str
+
+
+def is_agency(company: str) -> bool:
+    name = fold(company or "")
+    return not name.strip() or any(a in name for a in AGENCY_NAMES) or bool(
+        AGENCY_WORDS.search(name))
+
+
+def fetch_postings(client: httpx.Client, app_id: str, app_key: str, country: str,
+                   query: str, days: int = DAYS) -> list[Posting]:
+    response = client.get(
+        ADZUNA_URL.format(country=country, page=1), timeout=30,
+        params={"app_id": app_id, "app_key": app_key, "what": query,
+                "max_days_old": days, "results_per_page": PER_PAGE,
+                "content-type": "application/json"})
+    response.raise_for_status()
+    return [
+        Posting(id=str(job["id"]), country=country.upper(),
+                company=(job.get("company") or {}).get("display_name", "").strip(),
+                title=html_to_text(job.get("title", "")),
+                snippet=html_to_text(job.get("description", "")),
+                posted_at=job.get("created", ""), url=job.get("redirect_url", ""),
+                query=query)
+        for job in response.json().get("results", [])
+    ]
+
+
+def posting_to_lead(p: Posting) -> tuple[str, dict]:
+    """(idempotency key, webhook-style payload). The posting is the evidence, kept verbatim
+    under `signal`; there is deliberately no person in it, only the company."""
+    return f"adzuna:{p.country}:{p.id}", {
+        "company": p.company,
+        "country": p.country,
+        "description": f"Currently hiring: {p.title}. {p.snippet}",
+        "signal": {"source": "adzuna", "query": p.query, "title": p.title, "url": p.url,
+                   "posted_at": p.posted_at},
+    }
+
+
+def run_signals(conn: psycopg.Connection, settings: Settings, client: httpx.Client,
+                countries: list[str] = COUNTRIES, queries: list[str] = QUERIES,
+                sleep: Callable[[float], None] = time.sleep) -> dict:
+    """Pull every (country, query), store new postings as leads. The worker does the rest."""
+    if not (settings.adzuna_app_id and settings.adzuna_app_key):
+        raise ValueError("set ADZUNA_APP_ID and ADZUNA_APP_KEY (free at developer.adzuna.com)")
+    postings, errors, seen = [], [], set()
+    for i, (country, query) in enumerate((c, q) for c in countries for q in queries):
+        if i:
+            sleep(PACE_S)
+        try:
+            found = fetch_postings(client, settings.adzuna_app_id, settings.adzuna_app_key,
+                                   country, query)
+        except httpx.HTTPError as exc:
+            status = getattr(getattr(exc, "response", None), "status_code", None)
+            errors.append(f"{country}/{query}: " + (f"HTTP {status}" if status else str(exc)))
+            continue
+        for p in found:  # the same posting matches several queries: count it once
+            if (p.country, p.id) not in seen:
+                seen.add((p.country, p.id))
+                postings.append(p)
+    real = [p for p in postings if not is_agency(p.company)]
+    accepted = sum(store_lead(conn, "adzuna", *posting_to_lead(p)) is not None for p in real)
+    summary = {"postings": len(postings), "agencies_skipped": len(postings) - len(real),
+               "accepted": accepted, "duplicates": len(real) - accepted}
+    if errors:
+        summary["errors"] = errors
+    log.info("signals pulled", extra=summary)
+    return summary
+
+
+def signals_report(conn: psycopg.Connection, limit: int = 15) -> list[dict]:
+    """Companies with live hiring signals, best first: how many postings, score, why."""
+    return conn.execute(
+        """
+        SELECT c.canonical_name AS company, c.country, s.total AS score, s.tier,
+               (SELECT string_agg(k || ' +' || v, ', ' ORDER BY v::int DESC, k)
+                FROM jsonb_each_text(s.breakdown) AS b(k, v)) AS reasons,
+               count(r.id) AS postings,
+               (array_agg(r.payload -> 'signal' ->> 'title' ORDER BY r.id))[1] AS example_title,
+               (array_agg(r.payload -> 'signal' ->> 'url' ORDER BY r.id))[1] AS example_url
+        FROM raw_leads r
+        JOIN contacts ct ON ct.id = r.contact_id
+        JOIN companies c ON c.id = ct.company_id
+        JOIN scores s ON s.company_id = c.id
+        WHERE r.source = 'adzuna'
+        GROUP BY c.id, s.total, s.tier, s.breakdown
+        ORDER BY s.total DESC, count(r.id) DESC, c.canonical_name
+        LIMIT %s
+        """, (limit,)).fetchall()
+
+
+def report_markdown(summary: dict, rows: list[dict], when: str) -> str:
+    lines = [
+        f"Pulled {when} from the Adzuna job API: **{summary['postings']}** postings for "
+        f"{', '.join(QUERIES)} roles across {len(COUNTRIES)} European countries in the last "
+        f"{DAYS} days; {summary['agencies_skipped']} from recruiting agencies dropped.",
+        "",
+        "| Company | Country | Score | Tier | Postings | Why | Example role |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    for r in rows:
+        title = (r["example_title"] or "").replace("|", "/")[:60]
+        lines.append(f"| {r['company']} | {r['country']} | {r['score']} | {r['tier']} | "
+                     f"{r['postings']} | {r['reasons'] or '—'} | [{title}]({r['example_url']}) |")
+    return "\n".join(lines)
+
+
+if __name__ == "__main__":
+    import datetime
+    from pathlib import Path
+
+    from app.config import get_settings
+    from app.db import get_pool, migrate
+    from app.log import setup_logging
+    from app.worker import drain
+    from bench.run import load_dotenv
+
+    load_dotenv()
+    get_settings.cache_clear()
+    setup_logging()
+    settings = get_settings()
+    pool = get_pool()
+    with pool.connection() as conn:
+        migrate(conn)
+    with pool.connection() as conn, httpx.Client() as client:
+        summary = run_signals(conn, settings, client)
+    drain(pool, settings)
+    with pool.connection() as conn:
+        rows = signals_report(conn)
+    table = report_markdown(summary, rows, datetime.date.today().isoformat())
+    readme = Path(__file__).resolve().parent.parent / "README.md"
+    text = readme.read_text(encoding="utf-8")
+    start, end = "<!-- signals:start -->", "<!-- signals:end -->"
+    if start in text:
+        head, _, rest = text.partition(start)
+        readme.write_text(f"{head}{start}\n{table}\n{end}{rest.partition(end)[2]}",
+                          encoding="utf-8")
+    print(summary)
+    print(table)
