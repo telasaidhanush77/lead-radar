@@ -260,3 +260,12 @@ def test_same_remote_role_in_two_countries_counts_once(db):
     ]])
     summary = run_signals(db, get_settings(), client, sleep=lambda s: None)
     assert summary["postings"] == 1 and summary["accepted"] == 1
+
+
+def test_malformed_arbeitnow_job_is_skipped_not_fatal():
+    from app.signals import fetch_arbeitnow
+
+    bad = {"title": "Security Engineer", "company_name": "NoSlug GmbH", "created_at": "soon"}
+    client, _ = arbeitnow([[bad, arbeitnow_job("a-9", "Acme", "Security Engineer")]])
+    postings, errors = fetch_arbeitnow(client, pages=1, sleep=lambda s: None)
+    assert [p.id for p in postings] == ["a-9"] and errors == []
