@@ -143,18 +143,18 @@ def fetch_arbeitnow(client: httpx.Client, pages: int = ARBEITNOW_PAGES,
             errors.append(f"arbeitnow/page {n}: {exc}")
             break
         for job in body.get("data", []):
-            label = role_label(job.get("title", ""))
-            if label is None:
+            label = role_label(job.get("title") or "")
+            if label is None or not job.get("slug"):  # no slug = no idempotency key: skip
                 continue
-            ts = job.get("created_at")
+            ts = str(job.get("created_at") or "")
             postings.append(Posting(
                 id=str(job["slug"]), country=country_from_location(job.get("location")),
                 company=(job.get("company_name") or "").strip(),
-                title=html_to_text(job.get("title", "")),
-                snippet=html_to_text(unescape(job.get("description", "")))[:500],
+                title=html_to_text(job.get("title") or ""),
+                snippet=html_to_text(unescape(job.get("description") or ""))[:500],
                 posted_at=(datetime.datetime.fromtimestamp(int(ts), datetime.UTC).isoformat()
-                           if ts else ""),
-                url=job.get("url", ""), query=label, source="arbeitnow"))
+                           if ts.isdigit() else ""),
+                url=job.get("url") or "", query=label, source="arbeitnow"))
         if not (body.get("links") or {}).get("next"):
             break
     return postings, errors
@@ -223,8 +223,10 @@ def schedule_refresh(conn: psycopg.Connection, from_now: bool = False) -> bool:
 
 def signals_refresh(conn: psycopg.Connection, payload: dict, settings: Settings) -> None:
     """Job handler: pull today's postings, then book tomorrow's run."""
-    # ponytail: the pull (~40 paced calls, ~2 min) runs inside the job's transaction; fine
-    # under the 5-minute stale-job reclaim, split per country if the query list grows.
+    # ponytail: the pull (15 Arbeitnow pages at 2 s, ~40 s; +~2 min with Adzuna keys) runs
+    # inside the job's transaction, under the 5-minute stale-job reclaim; split per source if
+    # it grows. After 3 failures the job goes dead (dashboard Retry button) and the schedule
+    # resumes on Retry or at the next app start.
     with httpx.Client() as client:
         run_signals(conn, settings, client)
     schedule_refresh(conn, from_now=True)
