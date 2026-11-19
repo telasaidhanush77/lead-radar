@@ -21,12 +21,16 @@ synthetic.
 ## Live: real companies that need compliance right now
 
 The synthetic data proves the plumbing. This proves the point: `python -m app.signals` pulls
-**real job postings** from the [Adzuna job API](https://developer.adzuna.com/) for
-TISAX, ISO 27001, SOC 2 and ISMS roles across 10 European countries, drops recruiting
-agencies, and runs each posting through the same pipeline. A company advertising an
+**real job postings** from the [Arbeitnow](https://www.arbeitnow.com) job board API (free,
+no key, mostly DACH), keeps roles whose title says TISAX, ISO 27001, SOC 2, ISMS,
+information security or data protection, drops recruiting agencies and security *vendors*
+hiring sales staff (they sell security, they don't buy it), collapses the same remote role
+listed once per country, and runs each posting through the same pipeline. (The
+[Adzuna](https://developer.adzuna.com/) API is wired in too and joins automatically when
+`ADZUNA_APP_ID` / `ADZUNA_APP_KEY` are set.) A company advertising an
 "ISMS Manager (ISO 27001)" is building the programme a compliance-automation vendor sells,
 and it says so in public. Postings for the same company add up (a company hiring for TISAX
-*and* ISO 27001 keeps both signals). With the keys set, the deployed app pulls again **every
+*and* ISO 27001 keeps both signals). The deployed app pulls again **every
 24 hours on its own** (a self-rescheduling queue job; a unique partial index keeps it to one
 pending run however often the free-tier host sleeps and restarts). Every company gets a page,
 `/companies/{id}` (and the same as JSON at `/api/companies/{id}`), listing the score, why,
@@ -34,7 +38,25 @@ and the postings behind it, and the AE's Slack alert says *why now*: the role th
 hiring for. The table below is written by the script:
 
 <!-- signals:start -->
-_Run `python -m app.signals` with `ADZUNA_APP_ID` / `ADZUNA_APP_KEY` set._
+Pulled 2026-11-19 from the [Arbeitnow](https://www.arbeitnow.com) job board API: **34** open security/compliance roles (TISAX, ISO 27001, SOC 2, ISMS, Information security, Data protection) among the newest 4,500 postings; 0 from recruiting agencies dropped.
+
+| Company | Country | Score | Tier | Postings | Why | Example role |
+|---|---|---|---|---|---|---|
+| bunq | NL | 50 | B | 1 | hiring_security +20, eu_hq +15, regulated +15 | [Security Engineer](https://www.arbeitnow.nl/jobs/companies/bunq/security-engineer-amsterdam-384590) |
+| Unblu | CH | 50 | B | 1 | hiring_security +20, eu_hq +15, regulated +15 | [Security Engineer](https://www.arbeitnow.ch/jobs/companies/unblu/security-engineer-basel-72871) |
+| Dashlane | FR | 35 | C | 2 | hiring_security +20, eu_hq +15 | [Staff Product Security Engineer](https://www.arbeitnow.fr/jobs/companies/dashlane/staff-product-security-engineer-paris-408629) |
+| Mistral.ai | FR | 35 | C | 2 | hiring_security +20, eu_hq +15 | [Applied AI Engineer, CyberSecurity, Defense](https://www.arbeitnow.fr/jobs/companies/mistralai/applied-ai-engineer-cybersecurity-defense-paris-31994) |
+| A-Gas | GB | 35 | C | 1 | hiring_security +20, eu_hq +15 | [Infrastructure and Security Engineer](https://www.arbeitnow.co.uk/jobs/companies/a-gas/infrastructure-and-security-engineer-portbury-33236) |
+| Encord | GB | 35 | C | 1 | hiring_security +20, eu_hq +15 | [Senior Security Engineer, GRC & Customer Trust](https://www.arbeitnow.co.uk/jobs/companies/encord/senior-security-engineer-grc-customer-trust-london-402675) |
+| Getyourguide | CH | 35 | C | 1 | hiring_security +20, eu_hq +15 | [Working Student, Security Engineer](https://www.arbeitnow.ch/jobs/companies/getyourguide/working-student-security-engineer-zurich-293662) |
+| Happyrobot.ai | FR | 35 | C | 1 | hiring_security +20, eu_hq +15 | [Senior Application Security Engineer](https://www.arbeitnow.fr/jobs/companies/happyrobotai/senior-application-security-engineer-france-114613) |
+| isaraerospace | DE | 35 | C | 1 | hiring_security +20, eu_hq +15 | [Senior Intelligence Officer, Information & Cybersecurity](https://www.arbeitnow.com/jobs/companies/isaraerospace/senior-intelligence-officer-information-cybersecurity-parsdorf-bavaria-185786) |
+| Jamorie Consulting GmbH | DE | 35 | C | 1 | hiring_security +20, eu_hq +15 | [Lead Consultant Cyber Security (m/w/d)](https://www.arbeitnow.com/jobs/companies/jamorie-consulting-gmbh/lead-consultant-cyber-security-berlin-313351) |
+| Janestreet | GB | 35 | C | 1 | hiring_security +20, eu_hq +15 | [Cybersecurity Engineer](https://www.arbeitnow.co.uk/jobs/companies/janestreet/cybersecurity-engineer-london-287765) |
+| Ledger | FR | 35 | C | 1 | hiring_security +20, eu_hq +15 | [Head of Security Engineering](https://www.arbeitnow.fr/jobs/companies/ledger/head-of-security-engineering-paris-309363) |
+| Namespace | CH | 35 | C | 1 | hiring_security +20, eu_hq +15 | [Security Engineer](https://www.arbeitnow.ch/jobs/companies/namespace/security-engineer-zurich-407809) |
+| Neuverge Tron | DE | 35 | C | 1 | hiring_security +20, eu_hq +15 | [Cybersecurity System Engineer / Technical Expert](https://www.arbeitnow.com/jobs/companies/neuverge-tron/cybersecurity-system-engineer-technical-expert-munich-31611) |
+| NXT Hero GmbH | DE | 35 | C | 1 | hiring_security +20, eu_hq +15 | [IT Security Officer (m/w/d)](https://www.arbeitnow.com/jobs/companies/nxt-hero-gmbh/it-security-officer-leipzig-233450) |
 <!-- signals:end -->
 
 ## Results

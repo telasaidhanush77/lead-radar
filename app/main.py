@@ -51,7 +51,7 @@ async def lifespan(app: FastAPI):
     with get_pool().connection() as conn:  # deploys have no separate migrate step
         migrate(conn)
         load_demo_cache(conn)
-        if settings.run_worker and settings.adzuna_app_id and settings.adzuna_app_key:
+        if settings.run_worker:
             from app.signals import schedule_refresh
 
             schedule_refresh(conn)  # daily live-signal pull; idempotent across restarts

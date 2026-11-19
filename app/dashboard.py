@@ -236,7 +236,8 @@ footer {{ margin-top: 32px; font-size: 13px; color: var(--muted); }}
     <div class="tablewrap"><table><tbody>{top_rows}</tbody></table></div></section>
   <div class="side">
     <section aria-labelledby="sig-h" class="live"><h2 id="sig-h">Live hiring signals · real companies</h2>
-      <ul class="deadlist">{signal_rows}</ul></section>
+      <ul class="deadlist">{signal_rows}</ul>
+      <p class="meta">Postings via <a href="https://www.arbeitnow.com" rel="noopener">Arbeitnow</a>, refreshed daily.</p></section>
     <section aria-labelledby="tier-h"><h2 id="tier-h">Tier mix</h2>
       <div class="tiers" role="img" aria-label="A {tier_a}, B {tier_b}, C {tier_c}">{tier_bar}</div>
       <div class="legend"><span class="lA">A → AE <b class="mono">{tier_a}</b></span>

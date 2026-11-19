@@ -85,10 +85,8 @@ def test_signals_panel_empty_state(db):
     assert "No live signals yet" in render_dashboard(db)
 
 
-def test_signals_run_requires_token_and_keys(client):
+def test_signals_run_requires_token(client):
     assert client.post("/signals/run").status_code == 401
-    r = client.post("/signals/run", headers=ADMIN)
-    assert r.status_code == 503 and "ADZUNA" in r.json()["detail"]
 
 
 def test_dashboard_links_companies_to_profiles(db):
