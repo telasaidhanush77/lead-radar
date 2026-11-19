@@ -36,4 +36,5 @@ select = ["E", "F", "I", "B", "UP"]
 extend-immutable-calls = ["fastapi.Depends", "fastapi.Header"]
 
 [tool.ruff.lint.per-file-ignores]
-"app/dashboard.py" = ["E501"]  # embedded HTML/CSS template
+"app/dashboard.py" = ["E501"]
+"app/profile.py" = ["E501"]  # embedded HTML/CSS template

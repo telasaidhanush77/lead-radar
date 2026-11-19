@@ -140,3 +140,44 @@ def test_signals_payload_is_stored_verbatim(db):
     row = db.execute("SELECT source, payload FROM raw_leads").fetchone()
     assert row["source"] == "adzuna" and row["payload"]["signal"]["query"] == "TISAX"
     json.dumps(row["payload"])
+
+
+def refresh_jobs(db):
+    return db.execute("SELECT status, run_after - now() AS wait FROM jobs "
+                      "WHERE kind = 'signals_refresh' ORDER BY id").fetchall()
+
+
+def test_schedule_refresh_is_single_and_daily(db):
+    from app.signals import schedule_refresh
+
+    assert schedule_refresh(db) is True and schedule_refresh(db) is False  # restarts: one job
+    assert len(refresh_jobs(db)) == 1 and refresh_jobs(db)[0]["wait"].total_seconds() <= 1
+    db.execute("UPDATE jobs SET status = 'done', updated_at = now()")
+    schedule_refresh(db)  # a run finished just now: next one tomorrow, not straight away
+    assert refresh_jobs(db)[-1]["wait"].total_seconds() > 23 * 3600
+
+
+def test_refresh_handler_runs_and_reschedules(db, monkeypatch):
+    from app import signals
+
+    calls = []
+    monkeypatch.setattr(signals, "run_signals",
+                        lambda conn, settings, client: calls.append(1) or {"accepted": 0})
+    settings = replace(get_settings(), adzuna_app_id="id", adzuna_app_key="key")
+    signals.signals_refresh(db, {}, settings)
+    assert calls == [1]
+    (job,) = refresh_jobs(db)
+    assert job["status"] == "queued" and job["wait"].total_seconds() > 23 * 3600
+
+
+def test_refresh_handler_without_keys_is_a_no_op(db):
+    from app import signals
+
+    signals.signals_refresh(db, {}, get_settings())
+    assert refresh_jobs(db) == []
+
+
+def test_worker_knows_the_refresh_job():
+    from app.worker import HANDLERS
+
+    assert "signals_refresh" in HANDLERS

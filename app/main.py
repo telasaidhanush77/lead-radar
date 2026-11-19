@@ -51,6 +51,11 @@ async def lifespan(app: FastAPI):
     with get_pool().connection() as conn:  # deploys have no separate migrate step
         migrate(conn)
         load_demo_cache(conn)
+        if settings.run_worker and settings.adzuna_app_id and settings.adzuna_app_key:
+            from app.signals import schedule_refresh
+
+            schedule_refresh(conn)  # daily live-signal pull; idempotent across restarts
+            conn.commit()
     stop = start_background(settings) if settings.run_worker else None
     yield
     if stop:
@@ -179,6 +184,26 @@ def read_brief(brief_id: int, conn: psycopg.Connection = Depends(get_conn)) -> d
     if row is None:
         raise HTTPException(404, "no brief with that id")
     return row
+
+
+@app.get("/api/companies/{company_id}")
+def company_json(company_id: int, conn: psycopg.Connection = Depends(get_conn)) -> dict:
+    from app.profile import company_profile
+
+    p = company_profile(conn, company_id)
+    if p is None:
+        raise HTTPException(404, "no company with that id")
+    return p
+
+
+@app.get("/companies/{company_id}", response_class=HTMLResponse)
+def company_page(company_id: int, conn: psycopg.Connection = Depends(get_conn)) -> str:
+    from app.profile import company_profile, render_profile
+
+    p = company_profile(conn, company_id)
+    if p is None:
+        raise HTTPException(404, "no company with that id")
+    return render_profile(p)
 
 
 @app.post("/signals/run", dependencies=[Depends(require_admin)])

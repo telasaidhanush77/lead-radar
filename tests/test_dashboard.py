@@ -89,3 +89,10 @@ def test_signals_run_requires_token_and_keys(client):
     assert client.post("/signals/run").status_code == 401
     r = client.post("/signals/run", headers=ADMIN)
     assert r.status_code == 503 and "ADZUNA" in r.json()["detail"]
+
+
+def test_dashboard_links_companies_to_profiles(db):
+    cid = seed_company(db, "Müller Automotive", "A", 90)
+    seed_signal(db)
+    html = render_dashboard(db)
+    assert f'href="/companies/{cid}"' in html and 'href="/companies/2"' in html

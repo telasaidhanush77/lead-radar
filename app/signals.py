@@ -120,11 +120,41 @@ def run_signals(conn: psycopg.Connection, settings: Settings, client: httpx.Clie
     return summary
 
 
+REFRESH_EVERY = "24 hours"
+
+
+def schedule_refresh(conn: psycopg.Connection, from_now: bool = False) -> bool:
+    """Queue the next daily pull unless one is already queued. At startup the next run is due
+    24 h after the last finished one, so a free-tier host that sleeps and wakes all day does not
+    re-pull on every wake. Returns whether a job was added."""
+    return conn.execute(
+        f"""
+        INSERT INTO jobs (kind, payload, run_after)
+        SELECT 'signals_refresh', '{{}}', CASE WHEN %s THEN now() + interval '{REFRESH_EVERY}'
+            ELSE greatest(now(), coalesce(max(updated_at) + interval '{REFRESH_EVERY}', now()))
+            END
+        FROM jobs WHERE kind = 'signals_refresh' AND status = 'done'
+        ON CONFLICT (kind) WHERE kind = 'signals_refresh' AND status = 'queued' DO NOTHING
+        """, (from_now,)).rowcount == 1
+
+
+def signals_refresh(conn: psycopg.Connection, payload: dict, settings: Settings) -> None:
+    """Job handler: pull today's postings, then book tomorrow's run. No keys, no schedule."""
+    if not (settings.adzuna_app_id and settings.adzuna_app_key):
+        log.info("signals refresh skipped: no Adzuna keys")
+        return
+    # ponytail: the pull (~40 paced calls, ~2 min) runs inside the job's transaction; fine
+    # under the 5-minute stale-job reclaim, split per country if the query list grows.
+    with httpx.Client() as client:
+        run_signals(conn, settings, client)
+    schedule_refresh(conn, from_now=True)
+
+
 def signals_report(conn: psycopg.Connection, limit: int = 15) -> list[dict]:
     """Companies with live hiring signals, best first: how many postings, score, why."""
     return conn.execute(
         """
-        SELECT c.canonical_name AS company, c.country, s.total AS score, s.tier,
+        SELECT c.id, c.canonical_name AS company, c.country, s.total AS score, s.tier,
                (SELECT string_agg(k || ' +' || v, ', ' ORDER BY v::int DESC, k)
                 FROM jsonb_each_text(s.breakdown) AS b(k, v)) AS reasons,
                count(r.id) AS postings,

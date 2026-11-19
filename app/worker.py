@@ -16,6 +16,7 @@ from app.dedupe import process_lead
 from app.log import job_id
 from app.route import alert_company, route_company
 from app.score import score_company
+from app.signals import signals_refresh
 
 log = logging.getLogger("worker")
 
@@ -28,6 +29,7 @@ HANDLERS: dict[str, Handler] = {
     "crm_sync": crm_sync,
     "crm_contacts": crm_contacts,
     "alert": alert_company,
+    "signals_refresh": signals_refresh,
 }
 IDLE_SLEEP_S = 0.5
 

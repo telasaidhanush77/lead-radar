@@ -61,11 +61,16 @@ def make_client() -> httpx.Client:
     return httpx.Client(timeout=10)
 
 
-def send_alert(settings: Settings, company: dict, score: dict) -> None:
+def alert_text(company: dict, score: dict) -> str:
     reasons = ", ".join(f"{rule} +{pts}" for rule, pts in score["breakdown"].items())
-    text = (f":rotating_light: Tier A lead: *{company['canonical_name']}* "
+    why_now = f" Why now: hiring {company['why_now']}." if company.get("why_now") else ""
+    return (f":rotating_light: Tier A lead: *{company['canonical_name']}* "
             f"({company['country'] or '?'}) score {score['total']}, owner {company['owner']}. "
-            f"Why: {reasons}")
+            f"Why: {reasons}.{why_now}")
+
+
+def send_alert(settings: Settings, company: dict, score: dict) -> None:
+    text = alert_text(company, score)
     if not settings.slack_webhook_url:
         log.info("ae_alert", extra={"company_id": company["id"], "text": text})
         return
@@ -95,8 +100,11 @@ def alert_company(conn: psycopg.Connection, payload: dict, settings: Settings) -
     company_id = payload["company_id"]
     if not claim_alert(conn, company_id):
         return
-    company = conn.execute("SELECT id, canonical_name, country, owner FROM companies "
-                           "WHERE id = %s", (company_id,)).fetchone()
+    company = conn.execute(
+        "SELECT id, canonical_name, country, owner, (SELECT r.payload -> 'signal' ->> 'title' "
+        "FROM raw_leads r JOIN contacts ct ON ct.id = r.contact_id WHERE ct.company_id = c.id "
+        "AND r.payload ? 'signal' ORDER BY r.id DESC LIMIT 1) AS why_now "
+        "FROM companies c WHERE id = %s", (company_id,)).fetchone()
     score = conn.execute("SELECT total, tier, breakdown FROM scores WHERE company_id = %s",
                          (company_id,)).fetchone()
     send_alert(settings, company, score)

@@ -105,3 +105,14 @@ def test_slack_failure_rolls_back_alert(db, monkeypatch):
     jobs = {r["kind"]: r["status"] for r in db.execute("SELECT kind, status FROM jobs")}
     assert jobs == {"route": "done", "alert": "dead", "crm_sync": "done",
                     "crm_contacts": "done"}
+
+
+def test_alert_text_says_why_now():
+    from app.route import alert_text
+
+    company = {"canonical_name": "Müller", "country": "DE", "owner": "anna",
+               "why_now": "ISMS Manager (TISAX)", "id": 7}
+    text = alert_text(company, {"total": 80, "breakdown": {"tisax": 30}})
+    assert "Why now: hiring ISMS Manager (TISAX)" in text and "tisax +30" in text
+    assert "Why now" not in alert_text(company | {"why_now": None},
+                                       {"total": 80, "breakdown": {}})

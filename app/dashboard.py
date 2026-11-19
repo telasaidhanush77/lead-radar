@@ -48,7 +48,7 @@ def _stage(label: str, key: str, value: int, note: str = "") -> str:
 
 def _top_rows(conn: psycopg.Connection) -> str:
     rows = conn.execute("""
-        SELECT c.canonical_name, c.country, c.owner, s.total, s.breakdown
+        SELECT c.id, c.canonical_name, c.country, c.owner, s.total, s.breakdown
         FROM scores s JOIN companies c ON c.id = s.company_id
         WHERE s.tier = 'A' ORDER BY s.total DESC, c.id LIMIT 20
     """).fetchall()
@@ -60,7 +60,8 @@ def _top_rows(conn: psycopg.Connection) -> str:
                         for rule, pts in r["breakdown"].items())
         width = round(100 * r["total"] / MAX_SCORE)
         out.append(
-            f'<tr><td><div class="co">{esc(r["canonical_name"])}</div>'
+            f'<tr><td><div class="co"><a href="/companies/{esc(r["id"])}">'
+            f'{esc(r["canonical_name"])}</a></div>'
             f'<div class="meta">{esc(r["country"] or "—")} · {esc(r["owner"])}</div></td>'
             f'<td class="score"><span class="mono">{esc(r["total"])}</span>'
             f'<span class="bar"><i style="width:{width}%"></i></span></td>'
@@ -82,7 +83,8 @@ def _signal_rows(conn: psycopg.Connection) -> str:
                 f'{esc(r["example_title"])}</a>' if url.startswith("https://")
                 else esc(r["example_title"]))
         out.append(
-            f'<li class="signal"><div><div class="co">{esc(r["company"])}</div>'
+            f'<li class="signal"><div><div class="co"><a href="/companies/{esc(r["id"])}">'
+            f'{esc(r["company"])}</a></div>'
             f'<div class="meta">{esc(r["country"] or "—")} · {esc(r["postings"])} '
             f'open role(s) · {link}</div></div>'
             f'<span class="mono sig-score">{esc(r["score"])}</span></li>')
@@ -199,7 +201,7 @@ ul.deadlist {{ list-style: none; padding: 0; margin: 0; }}
 .live {{ border-color: var(--a); }}
 .signal {{ display: flex; gap: 10px; justify-content: space-between; align-items: start;
           padding: 10px 0; border-top: 1px solid var(--line); }}
-.signal a {{ color: var(--ink); }} .sig-score {{ color: var(--a); font-size: 18px; }}
+.signal a, .co a {{ color: var(--ink); }} .sig-score {{ color: var(--a); font-size: 18px; }}
 .bench {{ display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; margin: 0; font-size: 14px; }}
 .bench dt {{ color: var(--muted); }} .bench dd {{ margin: 0; text-align: right; }}
 code {{ font-family: var(--mono); font-size: 13px; }}
