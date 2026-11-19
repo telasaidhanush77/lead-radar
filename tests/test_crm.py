@@ -224,3 +224,22 @@ def test_hubspot_create_is_not_retried_after_5xx():
     with pytest.raises(Exception, match="503"):
         crm.upsert_company("acme.de", {"name": "Acme"}, None)
     assert seen.count(("POST", "/crm/v3/objects/companies")) == 1
+
+
+def test_hubspot_company_without_domain_is_found_by_exact_name():
+    """Found live: a domainless company was created twice once local sync state was lost."""
+    seen, bodies = [], []
+
+    def handler(request):
+        seen.append((request.method, request.url.path))
+        if request.url.path.endswith("/search"):
+            bodies.append(json.loads(request.content))
+            return httpx.Response(200, json={"total": 1, "results": [{"id": "91"}]})
+        return httpx.Response(200, json={})
+
+    crm = HubSpotCRM("tok", httpx.Client(transport=httpx.MockTransport(handler),
+                                         base_url="https://api.hubapi.com"))
+    assert crm.upsert_company(None, {"name": "Aurora Logistics S.p.A."}, None) == "91"
+    assert bodies[0]["filterGroups"][0]["filters"] == [
+        {"propertyName": "name", "operator": "EQ", "value": "Aurora Logistics S.p.A."}]
+    assert seen[-1] == ("PATCH", "/crm/v3/objects/companies/91")

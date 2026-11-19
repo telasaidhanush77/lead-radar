@@ -50,7 +50,8 @@ class FakeCRM:
 
 
 class HubSpotCRM:
-    """HubSpot CRM v3. Companies: known id -> PATCH; else search by domain -> PATCH or POST.
+    """HubSpot CRM v3. Companies: known id -> PATCH; else search by domain (or exact name when
+    there is no domain) -> PATCH or POST.
     Contacts: batch upsert keyed on email, then the default contact->company association."""
 
     def __init__(self, token: str, client: httpx.Client | None = None):
@@ -63,11 +64,15 @@ class HubSpotCRM:
                                     method=method, idempotent=idempotent)
 
     def upsert_company(self, domain: str | None, props: dict, external_id: str | None) -> str:
-        if not external_id and domain:
+        # Match on domain; a company with no domain falls back to its exact name, or losing
+        # our crm_sync row would create it again. ponytail: exact-name match can merge two
+        # namesakes; HubSpot's search has no country-scoped fuzzy match to do better.
+        key = ("domain", domain) if domain else ("name", props.get("name"))
+        if not external_id and key[1]:
             found = self._call("POST", "/crm/v3/objects/companies/search", {
                 "filterGroups": [{"filters": [
-                    {"propertyName": "domain", "operator": "EQ", "value": domain}]}],
-                "properties": ["domain"], "limit": 1})
+                    {"propertyName": key[0], "operator": "EQ", "value": key[1]}]}],
+                "properties": [key[0]], "limit": 1})
             if found.get("results"):
                 external_id = found["results"][0]["id"]
         if external_id:

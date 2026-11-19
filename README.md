@@ -173,6 +173,10 @@ Tier **A ≥ 70** → AE alert (once per company, ever) · **B ≥ 40** → BDR 
   serialised).
 - The agent only reads the company's own website. Large corporate sites often block bots
   (HTTP 403/429), in which case it falls back to the template brief. SMB sites usually work.
+- **Verified against a real HubSpot portal:** 5 companies + contacts synced, then the local
+  `crm_sync` table wiped and everything synced again → every company matched to the same
+  HubSpot id, zero duplicates. That run caught a real bug: a company with no domain (its
+  contact used a hotmail address) was created twice; it is now matched by exact name.
 - One-way CRM sync; HubSpot gets standard fields only (the score rides in `description`).
 - The AE alert is its own job, so a Slack outage only delays it. A crash between sending and
   committing can still repeat one alert; a delivery-id dedupe on the receiving side would fix it.
