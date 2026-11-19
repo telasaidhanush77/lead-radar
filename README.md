@@ -26,7 +26,12 @@ TISAX, ISO 27001, SOC 2 and ISMS roles across 10 European countries, drops recru
 agencies, and runs each posting through the same pipeline. A company advertising an
 "ISMS Manager (ISO 27001)" is building the programme a compliance-automation vendor sells,
 and it says so in public. Postings for the same company add up (a company hiring for TISAX
-*and* ISO 27001 keeps both signals). The table below is written by the script:
+*and* ISO 27001 keeps both signals). With the keys set, the deployed app pulls again **every
+24 hours on its own** (a self-rescheduling queue job; a unique partial index keeps it to one
+pending run however often the free-tier host sleeps and restarts). Every company gets a page,
+`/companies/{id}` (and the same as JSON at `/api/companies/{id}`), listing the score, why,
+and the postings behind it, and the AE's Slack alert says *why now*: the role they are
+hiring for. The table below is written by the script:
 
 <!-- signals:start -->
 _Run `python -m app.signals` with `ADZUNA_APP_ID` / `ADZUNA_APP_KEY` set._
