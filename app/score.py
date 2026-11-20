@@ -1,14 +1,16 @@
 """How badly does this company need compliance automation? Transparent points, no black box."""
 
+import re
 from collections.abc import Iterable
 
 import psycopg
 from psycopg.types.json import Jsonb
 
 from app.config import Settings
+from app.normalize import fold
 from app.queue import enqueue
 
-MODEL_VERSION = "rules-v1"
+MODEL_VERSION = "rules-v2"  # v2: job-posting evidence rules
 WEIGHTS = {
     "eu_hq": 15,            # GDPR applies; European buyers ask for ISO 27001
     "size_fit": 15,         # 20-500 staff: big enough to be asked, too small for a GRC team
@@ -17,7 +19,12 @@ WEIGHTS = {
     "hiring_security": 20,  # they are building security right now
     "regulated": 15,        # finance / health / insurance / critical infrastructure
     "senior_contact": 10,   # the lead can actually buy
+    "framework_role": 15,   # an open role names the framework: certification under way now
+    "active_hiring": 10,    # 2+ distinct open security roles: a programme, not a vacancy
 }
+# Named in a job title, these mean "we are getting certified / building the ISMS".
+FRAMEWORKS = re.compile(r"tisax|iso ?/? ?(iec)? ?27001|soc ?2|\bisms\b|\bgrc\b|\bnis ?2\b|"
+                        r"\bdora\b|informationssicherheitsbeauftragte|\bciso\b")
 TIER_A, TIER_B = 70, 40
 SIZE_MIN, SIZE_MAX = 20, 500
 EUROPE = frozenset({
@@ -34,9 +41,11 @@ def tier_for(total: int) -> str:
 
 
 def score(country: str | None, employees: int | None, signals: Iterable[str],
-          best_seniority: str) -> tuple[int, str, dict[str, int]]:
-    """(total, tier, breakdown). The breakdown holds only rules that fired, so a rep sees why."""
+          best_seniority: str, open_roles: Iterable[str] = ()) -> tuple[int, str, dict[str, int]]:
+    """(total, tier, breakdown). The breakdown holds only rules that fired, so a rep sees why.
+    `open_roles` are the company's public job titles (the live-signal evidence)."""
     signals = set(signals)
+    roles = {fold(r) for r in open_roles if r}
     fired = {
         "eu_hq": country in EUROPE,
         "size_fit": employees is not None and SIZE_MIN <= employees <= SIZE_MAX,
@@ -45,6 +54,8 @@ def score(country: str | None, employees: int | None, signals: Iterable[str],
         "hiring_security": "hiring_security" in signals,
         "regulated": "regulated_industry" in signals,
         "senior_contact": best_seniority in SENIOR,
+        "framework_role": any(FRAMEWORKS.search(r) for r in roles),
+        "active_hiring": len(roles) >= 2,
     }
     breakdown = {rule: WEIGHTS[rule] for rule, hit in fired.items() if hit}
     total = sum(breakdown.values())
@@ -59,8 +70,12 @@ def score_company(conn: psycopg.Connection, payload: dict, settings: Settings) -
     seniorities = [r["seniority"] for r in conn.execute(
         "SELECT seniority FROM contacts WHERE company_id = %s", (company_id,))]
     best = max(seniorities, key=lambda s: SENIORITY_RANK.get(s, 0), default="unknown")
+    roles = [r["title"] for r in conn.execute(
+        "SELECT r.payload -> 'signal' ->> 'title' AS title FROM raw_leads r "
+        "JOIN contacts c ON c.id = r.contact_id WHERE c.company_id = %s AND r.payload ? 'signal'",
+        (company_id,))]
     total, tier, breakdown = score(company["country"], company["employees"], company["signals"],
-                                   best)
+                                   best, roles)
     conn.execute(
         """
         INSERT INTO scores (company_id, total, tier, breakdown, model_version)

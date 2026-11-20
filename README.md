@@ -43,11 +43,11 @@ Pulled 2026-11-19 from the [Arbeitnow](https://www.arbeitnow.com) job board API:
 | Company | Country | Score | Tier | Postings | Why | Example role |
 |---|---|---|---|---|---|---|
 | bunq | NL | 50 | B | 1 | hiring_security +20, eu_hq +15, regulated +15 | [Security Engineer](https://www.arbeitnow.nl/jobs/companies/bunq/security-engineer-amsterdam-384590) |
+| Encord | GB | 50 | B | 1 | hiring_security +20, eu_hq +15, framework_role +15 | [Senior Security Engineer, GRC & Customer Trust](https://www.arbeitnow.co.uk/jobs/companies/encord/senior-security-engineer-grc-customer-trust-london-402675) |
 | Unblu | CH | 50 | B | 1 | hiring_security +20, eu_hq +15, regulated +15 | [Security Engineer](https://www.arbeitnow.ch/jobs/companies/unblu/security-engineer-basel-72871) |
-| Dashlane | FR | 35 | C | 2 | hiring_security +20, eu_hq +15 | [Staff Product Security Engineer](https://www.arbeitnow.fr/jobs/companies/dashlane/staff-product-security-engineer-paris-408629) |
-| Mistral.ai | FR | 35 | C | 2 | hiring_security +20, eu_hq +15 | [Applied AI Engineer, CyberSecurity, Defense](https://www.arbeitnow.fr/jobs/companies/mistralai/applied-ai-engineer-cybersecurity-defense-paris-31994) |
+| Dashlane | FR | 45 | B | 2 | hiring_security +20, eu_hq +15, active_hiring +10 | [Staff Product Security Engineer](https://www.arbeitnow.fr/jobs/companies/dashlane/staff-product-security-engineer-paris-408629) |
+| Mistral.ai | FR | 45 | B | 2 | hiring_security +20, eu_hq +15, active_hiring +10 | [Applied AI Engineer, CyberSecurity, Defense](https://www.arbeitnow.fr/jobs/companies/mistralai/applied-ai-engineer-cybersecurity-defense-paris-31994) |
 | A-Gas | GB | 35 | C | 1 | hiring_security +20, eu_hq +15 | [Infrastructure and Security Engineer](https://www.arbeitnow.co.uk/jobs/companies/a-gas/infrastructure-and-security-engineer-portbury-33236) |
-| Encord | GB | 35 | C | 1 | hiring_security +20, eu_hq +15 | [Senior Security Engineer, GRC & Customer Trust](https://www.arbeitnow.co.uk/jobs/companies/encord/senior-security-engineer-grc-customer-trust-london-402675) |
 | Getyourguide | CH | 35 | C | 1 | hiring_security +20, eu_hq +15 | [Working Student, Security Engineer](https://www.arbeitnow.ch/jobs/companies/getyourguide/working-student-security-engineer-zurich-293662) |
 | Happyrobot.ai | FR | 35 | C | 1 | hiring_security +20, eu_hq +15 | [Senior Application Security Engineer](https://www.arbeitnow.fr/jobs/companies/happyrobotai/senior-application-security-engineer-france-114613) |
 | isaraerospace | DE | 35 | C | 1 | hiring_security +20, eu_hq +15 | [Senior Intelligence Officer, Information & Cybersecurity](https://www.arbeitnow.com/jobs/companies/isaraerospace/senior-intelligence-officer-information-cybersecurity-parsdorf-bavaria-185786) |
@@ -140,6 +140,13 @@ Transparent points, so a rep can read *why* a lead is hot:
 | Hiring security/compliance roles | 20 | Investing in security right now |
 | Regulated industry | 15 | Compliance is mandatory |
 | Senior contact (C-level/VP/Director) | 10 | Can buy or champion |
+| An open role names a framework (TISAX, ISO 27001, SOC 2, ISMS, GRC, NIS2, DORA, CISO) | 15 | Certification is under way *now* |
+| 2+ distinct open security roles | 10 | A programme, not one vacancy |
+
+The last two rules read the public job postings behind a company (the live signals below).
+Postings say nothing about headcount or who to contact, so a real company found only
+through a posting usually lands in tier B/C. That is deliberate: no score is invented for
+data the pipeline doesn't have. Company size and contact enrichment is the next source.
 
 Tier **A ≥ 70** → AE alert (once per company, ever) · **B ≥ 40** → BDR queue · **C** → nurture.
 
